@@ -1,0 +1,197 @@
+:root {
+    --primary: #ff9a9e;
+    --secondary: #fad0c4;
+    --accent: #ff6b6b;
+    --text: #4a4a4a;
+    --card-bg: #ffffff;
+    /* Указываем обновленный стек шрифтов */
+    --font-main: 'Nunito', sans-serif;
+    --font-headers: 'Comfortaa', cursive;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main); /* Основной мягкий шрифт */
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text);
+    padding: 20px;
+    -webkit-font-smoothing: antialiased; /* Улучшает отрисовку на Mac/iOS */
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+header h1 {
+    font-family: var(--font-headers); /* Акцентный шрифт для заголовка */
+    font-size: 2.2rem;
+    color: white;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    font-weight: 600;
+    color: white;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+/* Карточка */
+.gacha-card {
+    background: var(--card-bg);
+    border-radius: 25px; /* Чуть более скругленные углы */
+    padding: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.image-container {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #f8f9fa; /* Светлый фон для пустых полей */
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    /* contain — чтобы котик был виден полностью без обрезки */
+    object-fit: contain; 
+    display: block;
+    transition: opacity 0.3s;
+    /* На случай, если картинка прозрачная или меньше контейнера */
+    background-color: #f8f9fa; 
+}
+
+
+.image-container img.hidden {
+    opacity: 0;
+}
+
+/* Лоадер (крутилка) */
+.loader {
+    position: absolute;
+    font-weight: 600;
+    color: var(--accent);
+    display: none;
+}
+
+.card-content {
+    padding: 20px 10px;
+}
+
+.card-content h2 {
+    font-family: var(--font-headers);
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-size: 1.6rem;
+}
+
+.card-content p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: #555;
+    font-weight: 400;
+}
+
+.rarity {
+    display: inline-block;
+    padding: 6px 18px;
+    background: #f0f0f0;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Кнопка */
+.summon-btn {
+    font-family: var(--font-main);
+    background: white;
+    border: none;
+    margin-top: 2rem;
+    padding: 16px 45px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.summon-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.summon-btn:active {
+    transform: translateY(1px);
+}
+
+.summon-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Анимация тряски (эффект гачи) */
+.shake-anim {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0) rotate(-1deg); }
+  20%, 80% { transform: translate3d(2px, 0, 0) rotate(2deg); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0) rotate(-4deg); }
+  40%, 60% { transform: translate3d(4px, 0, 0) rotate(4deg); }
+}
+
+/* Стиль для счетчика */
+.stats-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 20px;
+    border-radius: 50px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Добавим небольшое свечение для легендарной карточки */
+.gacha-card.legendary-glow {
+    box-shadow: 0 0 30px rgba(255, 152, 0, 0.6);
+    border: 2px solid #ff9800;
+}
+
+/* Стили для редкости */
+.rare-common { color: #888; border: 1px solid #888; background: white; }
+.rare-rare { color: #007bff; border: 1px solid #007bff; background: #e6f2ff; }
+.rare-legendary { color: #ff9800; border: 1px solid #ff9800; background: #fff4e5; box-shadow: 0 0 10px #ff980050; }

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Твой Кото-Облик</title>
+    <!-- Шрифты -->
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Библиотека для конфетти (салюта) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Кто ты сегодня?</h1>
+            <p>Узнай свой истинный облик в мире котиков</p>
+            <!-- Счётчик -->
+            <div class="stats-badge">
+                🐾 Призвано котиков: <span id="total-count">0</span>
+            </div>
+        </header>
+
+        <main>
+            <div class="gacha-card" id="card">
+                <div class="image-container">
+                    <img id="cat-image" src="https://cataas.com/cat?width=400&height=400" alt="Твой котик появится здесь">
+                    <div class="loader" id="loader">Ищем котика...</div>
+                </div>
+                
+                <div class="card-content">
+                    <h2 id="cat-title">???</h2>
+                    <p id="cat-desc">Нажми на лапку, чтобы совершить призыв!</p>
+                    <div class="rarity" id="cat-rarity">Редкость: ???</div>
+                </div>
+            </div>
+
+            <button id="summon-btn" class="summon-btn">
+                <span>🐾 Призвать котика 🐾</span>
+            </button>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
