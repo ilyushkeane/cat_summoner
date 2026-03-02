@@ -89,6 +89,20 @@
         desc: "Твои глаза полны светлой грусти. Пусть сегодня найдется повод для искренней радости!" 
     },
 
+    // ЭПИЧЕСКИЕ (Epic) - 3 новых персонажа
+    { 
+        title: "Кото-Пират", tag: "costume", rarity: "Эпический", class: "epic",
+        desc: "Йо-хо-хо! Сокровище (твоя миска) уже близко. Желаю попутного ветра и верного курса во всех сегодняшних начинаниях!" 
+    },
+    { 
+        title: "Супер-Кот", tag: "costume", rarity: "Эпический", class: "epic",
+        desc: "Твой плащ шуршит громче всех в этом районе. Пусть сегодня твои суперспособности помогут спасти мир или хотя бы выспаться!" 
+    },
+    { 
+        title: "Пчело-Кот", tag: "costume", rarity: "Эпический", class: "epic",
+        desc: "Ты слишком сладкий, чтобы жалить. Желаю максимально продуктивного дня и побольше «цветочного» нектара в виде вкусного кофе!" 
+    },
+
     // ЛЕГЕНДАРНЫЕ (Legendary) - 2 персонажа
     { 
         title: "Властелин Прайда", tag: "lion", rarity: "Легендарный", class: "legendary",
@@ -100,7 +114,74 @@
     }
 ];
 
-// Логика работы (счётчик, LocalStorage, "Салют" анимация, Загрузка с фоллбеком)
+const API_URL = "http://127.0.0.1:8000/api";
+
+// Твои настройки аналитики
+const METRICA_ID = 107060992; // Твой ID Яндекса
+
+/**
+ * Универсальная функция для отправки событий во все системы сразу
+ * @param {string} eventName - Название события (например, 'summon_click')
+ * @param {object} params - Дополнительные данные (например, { rarity: 'legendary' })
+ */
+function trackEvent(eventName, params = {}) {
+    // 1. Отправка в Google Analytics
+    if (typeof gtag === 'function') {
+        gtag('event', eventName, params);
+    }
+    
+    // 2. Отправка в Яндекс.Метрику
+    if (typeof ym === 'function') {
+        ym(METRICA_ID, 'reachGoal', eventName, params);
+    }
+
+    console.log(`📊 [Analytics] Событие: ${eventName}`, params);
+}
+
+
+// 1. Функция для создания или получения ID пользователя из памяти браузера
+function getUserId() {
+    let uuid = localStorage.getItem('gachapets_uuid');
+    if (!uuid) {
+        // Создаем случайный ID, если его нет
+        uuid = 'p_' + Math.random().toString(36).substr(2, 9) + Date.now();
+        localStorage.setItem('gachapets_uuid', uuid);
+    }
+    return uuid;
+}
+
+// 2. Функция отправки данных на твой сервер (Бэкенд)
+async function sendDataToServer(persona) {
+    const payload = {
+        user_uuid: getUserId(),
+        cat_title: persona.title,
+        rarity: persona.class
+    };
+
+    console.log("🚀 Отправляю данные в базу:", payload);
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log("✅ Ответ сервера:", result);
+        }
+    } catch (e) {
+
+        trackEvent('technical_error', { 
+        error_type: 'fetch_error',
+        message: e.message 
+    });
+
+        // Если бэкенд выключен, мы просто пишем в консоль, чтобы кнопка не зависала
+        console.warn("⚠️ Не удалось сохранить в БД (возможно, бэкенд выключен):", e);
+    }
+}
 
 // 2. Элементы DOM
 const btn = document.getElementById('summon-btn');
@@ -116,66 +197,55 @@ const totalCountDisplay = document.getElementById('total-count');
 let totalSummons = parseInt(localStorage.getItem('totalCatsSummoned')) || 0;
 if (totalCountDisplay) totalCountDisplay.textContent = totalSummons;
 
-// 4. Логика шансов выпадения (Гача-механика)
+// 3. Логика Гачи
 function getRandomPersona() {
     const roll = Math.random() * 100;
     let pool = [];
 
-    if (roll < 10) { // 10% шанс
-        pool = personalities.filter(p => p.class === "legendary");
-    } else if (roll < 40) { // 30% шанс
-        pool = personalities.filter(p => p.class === "rare");
-    } else { // 60% шанс
-        pool = personalities.filter(p => p.class === "common");
-    }
+    if (roll < 5) pool = personalities.filter(p => p.class === "legendary");
+    else if (roll < 20) pool = personalities.filter(p => p.class === "epic");
+    else if (roll < 45) pool = personalities.filter(p => p.class === "rare");
+    else pool = personalities.filter(p => p.class === "common");
 
-    if (pool.length === 0) pool = personalities;
     return pool[Math.floor(Math.random() * pool.length)];
 }
 
-// 5. Главная функция призыва
-function summonCat() {
-    // Блокируем интерфейс
+// 4. Функция призыва
+function summonCat(event) {
+    if (event) event.preventDefault();
+    if (btn.disabled) return;
+
+    trackEvent('summon_attempt'); // Пользователь нажал кнопку
+
     btn.disabled = true;
     btn.textContent = "Призываем...";
-    
     card.classList.add('shake-anim');
-    card.classList.remove('legendary-glow');
+    card.classList.remove('legendary-glow', 'epic-glow');
     catImage.classList.add('hidden');
     loader.style.display = 'block';
 
     const persona = getRandomPersona();
     
-    // Формируем URL с тегом для аутентичности
-    const newImageSrc = `https://cataas.com/cat/${persona.tag}?width=400&height=400&t=${Date.now()}`;
+    // Запрашиваем картинку у нашего бэкенда
+    const newImageSrc = `http://127.0.0.1:8000/api/get_cat/${persona.tag}?t=${Date.now()}`;
+    
     const downloadingImage = new Image();
-
-    // Обработка успешной загрузки
     downloadingImage.onload = function() {
         displayCatResult(this.src, persona);
     };
-
-    // Обработка ошибки (фоллбек на случайного кота)
     downloadingImage.onerror = function() {
-        console.warn(`Фото с тегом ${persona.tag} не найдено, грузим случайное.`);
-        const fallbackSrc = `https://cataas.com/cat?width=400&height=400&t=${Date.now()}`;
-        const fallbackImage = new Image();
-        fallbackImage.onload = function() {
-            displayCatResult(this.src, persona);
-        };
-        fallbackImage.src = fallbackSrc;
+        // Фоллбек если наш сервак не отдал картинку
+        console.error("Ошибка загрузки локального фото");
+        btn.disabled = false;
+        btn.innerHTML = "<span>🐾 Ошибка сервера 🐾</span>";
     };
-
     downloadingImage.src = newImageSrc;
 }
 
 // 6. Функция отображения результата
 function displayCatResult(imageSrc, persona) {
-    // Небольшая задержка для завершения анимации тряски
     setTimeout(() => {
         card.classList.remove('shake-anim');
-        
-        // Обновляем контент
         catImage.src = imageSrc;
         catImage.classList.remove('hidden');
         loader.style.display = 'none';
@@ -183,34 +253,41 @@ function displayCatResult(imageSrc, persona) {
         catTitle.textContent = persona.title;
         catDesc.textContent = persona.desc;
         catRarity.textContent = `Редкость: ${persona.rarity}`;
-        
-        // Обновляем стили редкости
-        catRarity.className = 'rarity'; 
-        catRarity.classList.add(`rare-${persona.class}`);
+        catRarity.className = `rarity rare-${persona.class}`;
 
-        // Спецэффекты для легендарок
-        if (persona.class === 'legendary') {
-            card.classList.add('legendary-glow');
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 150,
-                    spread: 70,
-                    origin: { y: 0.6 },
-                    colors: ['#ff9800', '#ff5722', '#f44336']
-                });
-            }
-        }
+        if (persona.class === 'epic') card.classList.add('epic-glow');
+        if (persona.class === 'legendary') card.classList.add('legendary-glow');
 
-        // Обновляем и сохраняем статистику
-        totalSummons++;
-        if (totalCountDisplay) totalCountDisplay.textContent = totalSummons;
-        localStorage.setItem('totalCatsSummoned', totalSummons);
+        // Отправляем в БД!
+        sendDataToServer(persona);
 
-        // Возвращаем кнопку в рабочее состояние
         btn.disabled = false;
         btn.innerHTML = "<span>🐾 Призвать ещё раз 🐾</span>";
     }, 600);
+
+    // Трекаем, что конкретно выпало
+    trackEvent('cat_summon_success', {
+        cat_name: persona.title,
+        rarity: persona.class,
+        user_id: getUserId()
+    });
+
+    // Отдельное событие для Легендарок (для настройки рекламы или целей)
+    if (persona.class === 'legendary') {
+        trackEvent('legendary_drop', { cat_name: persona.title });
+    }
 }
 
 // 7. Слушатель событий
-btn.addEventListener('click', summonCat);
+btn.onclick = (event) => {
+    summonCat(event);
+    return false;
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+    const uuid = getUserId();
+    trackEvent('app_init', { 
+        user_id: uuid,
+        screen_size: window.innerWidth + 'x' + window.innerHeight
+    });
+});

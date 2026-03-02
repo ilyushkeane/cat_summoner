@@ -195,3 +195,17 @@ header p {
 .rare-common { color: #888; border: 1px solid #888; background: white; }
 .rare-rare { color: #007bff; border: 1px solid #007bff; background: #e6f2ff; }
 .rare-legendary { color: #ff9800; border: 1px solid #ff9800; background: #fff4e5; box-shadow: 0 0 10px #ff980050; }
+
+/* Эпическая редкость (Фиолетовый стиль) */
+.rare-epic { 
+    color: #9c27b0; 
+    border: 1px solid #9c27b0; 
+    background: #f3e5f5; 
+    box-shadow: 0 0 10px rgba(156, 39, 176, 0.3); 
+}
+
+/* Свечение для эпической карточки */
+.gacha-card.epic-glow {
+    box-shadow: 0 0 30px rgba(156, 39, 176, 0.5);
+    border: 2px solid #9c27b0;
+}
