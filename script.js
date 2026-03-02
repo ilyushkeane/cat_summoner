@@ -114,7 +114,7 @@
     }
 ];
 
-const API_URL = "http://127.0.0.1:8000/api";
+const API_URL = "/api"; 
 
 // Твои настройки аналитики
 const METRICA_ID = 107060992; // Твой ID Яндекса

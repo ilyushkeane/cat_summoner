@@ -5,19 +5,29 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_url, load_dotenv
 from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, String, Integer, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 
+load_dotenv()
+
 # --- ПУТИ ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CATS_DIR = os.path.join(BASE_DIR, "static", "cats")
 
 # --- БАЗА ДАННЫХ ---
-DATABASE_URL = "sqlite:///./gachapets.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./gachapets.db")
+# Теперь engine создается универсально
+engine = create_engine(DATABASE_URL)
+# Если используешь SQLite, для него нужны доп. аргументы, 
+# поэтому сделаем небольшую проверку:
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+else:
+    engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
