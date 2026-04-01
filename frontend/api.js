@@ -4,11 +4,19 @@ import { getUserId } from './storage.js';
 export async function fetchCatImage(tag) {
     const url = `${API_URL}/get_cat/${tag}?t=${Date.now()}`;
     
-    // Создаем промис, который зарезолвится только когда картинка СКАЧАЕТСЯ целиком
     return new Promise((resolve, reject) => {
         const img = new Image();
-        img.onload = () => resolve(url); // Картинка готова
-        img.onerror = () => reject(new Error("Image load error"));
+        // Тайм-аут на случай, если сервер или сеть тормозят
+        const timeout = setTimeout(() => reject(new Error("Timeout")), 10000);
+
+        img.onload = () => {
+            clearTimeout(timeout);
+            resolve(url);
+        };
+        img.onerror = () => {
+            clearTimeout(timeout);
+            reject(new Error("Load Error"));
+        };
         img.src = url;
     });
 }
@@ -24,5 +32,7 @@ export async function sendStats(persona) {
                 rarity: persona.class
             })
         });
-    } catch (e) { console.warn("Статистика не сохранена"); }
+    } catch (e) {
+        console.warn("📊 Статистика не сохранена, но игра продолжается");
+    }
 }
