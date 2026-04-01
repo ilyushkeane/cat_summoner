@@ -1,8 +1,8 @@
-import { gameState, getUserId } from './frontend/js/storage.js';
-import { trackEvent } from './frontend/js/analytics.js';
-import * as gacha from './frontend/js/gacha.js';
-import * as api from './frontend/js/api.js';
-import * as ui from './frontend/js/ui.js';
+import { gameState, getUserId } from './frontend/storage.js';
+import { trackEvent } from './frontend/analytics.js';
+import * as gacha from './frontend/gacha.js';
+import * as api from './frontend/api.js';
+import * as ui from './frontend/ui.js';
 
 async function handleSummon(event) {
     if (event) event.preventDefault();
