@@ -15,7 +15,7 @@ export function setLoading(isLoading) {
     if (isLoading) {
         elements.btn.textContent = "Призываем...";
         elements.card.classList.add('shake-anim');
-        elements.card.classList.remove('legendary-glow', 'epic-glow');
+        // Прячем старую картинку, чтобы не было "перескока"
         elements.catImage.classList.add('hidden');
         elements.loader.style.display = 'block';
     } else {
@@ -26,30 +26,54 @@ export function setLoading(isLoading) {
 }
 
 export function renderResult(imgUrl, persona, state) {
-    setLoading(false);
+    // Сначала обновляем все данные в памяти DOM
     elements.catImage.src = imgUrl;
     elements.catTitle.textContent = persona.title;
     elements.catDesc.textContent = persona.desc;
     elements.catRarity.textContent = `Редкость: ${persona.rarity}`;
+    
+    // Очищаем старые классы редкости и ставим новый
     elements.catRarity.className = `rarity rare-${persona.class}`;
+    elements.card.classList.remove('legendary-glow', 'epic-glow');
 
+    // Теперь, когда всё готово, выключаем лоадер и показываем карточку
+    setLoading(false);
+
+    // Прибавляем счетчик
     state.summons++;
     elements.totalCount.textContent = state.summons;
 
-    if (persona.class === 'epic') elements.card.classList.add('epic-glow');
-    
+    // Спецэффекты
+    if (persona.class === 'epic') {
+        elements.card.classList.add('epic-glow');
+        triggerConfetti('epic');
+    }
+
     if (persona.class === 'legendary') {
         state.legendaries++;
         elements.legCount.textContent = state.legendaries;
         elements.card.classList.add('legendary-glow');
-        launchConfetti();
+        triggerConfetti('legendary');
     }
-    elements.btn.innerHTML = "<span>🐾 Призвать ещё раз 🐾</span>";
 }
 
-function launchConfetti() {
-    if (typeof confetti === 'function') {
-        confetti({ particleCount: 250, spread: 100, origin: { y: 0.6 }, colors: ['#ff9800', '#ffffff', '#ffd700'] });
+function triggerConfetti(type) {
+    if (typeof confetti !== 'function') return;
+    
+    if (type === 'epic') {
+        confetti({
+            particleCount: 60,
+            spread: 50,
+            origin: { y: 0.7 },
+            colors: ['#9c27b0', '#e1bee7', '#ffffff']
+        });
+    } else {
+        confetti({
+            particleCount: 250,
+            spread: 100,
+            origin: { y: 0.6 },
+            colors: ['#ff9800', '#ffffff', '#ffd700']
+        });
     }
 }
 

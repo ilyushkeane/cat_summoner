@@ -1,10 +1,16 @@
-import { API_URL } from './config.js'; // Точка означает "в этой же папке"
+import { API_URL } from './config.js';
 import { getUserId } from './storage.js';
 
 export async function fetchCatImage(tag) {
-    const response = await fetch(`${API_URL}/get_cat/${tag}?t=${Date.now()}`);
-    if (!response.ok) throw new Error("API Error");
-    return response.url;
+    const url = `${API_URL}/get_cat/${tag}?t=${Date.now()}`;
+    
+    // Создаем промис, который зарезолвится только когда картинка СКАЧАЕТСЯ целиком
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(url); // Картинка готова
+        img.onerror = () => reject(new Error("Image load error"));
+        img.src = url;
+    });
 }
 
 export async function sendStats(persona) {

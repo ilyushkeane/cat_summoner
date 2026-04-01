@@ -1,27 +1,39 @@
-import { gameState, getUserId } from './frontend/storage.js';
-import { trackEvent } from './frontend/analytics.js';
-import * as gacha from './frontend/gacha.js';
-import * as api from './frontend/api.js';
-import * as ui from './frontend/ui.js';
+import { gameState, getUserId } from './frontend/js/storage.js';
+import { trackEvent } from './frontend/js/analytics.js';
+import * as gacha from './frontend/js/gacha.js';
+import * as api from './frontend/js/api.js';
+import * as ui from './frontend/js/ui.js';
 
 async function handleSummon(event) {
     if (event) event.preventDefault();
+    
+    // Если уже призываем — игнорируем клик
+    const btn = document.getElementById('summon-btn');
+    if (btn.disabled) return;
+
     ui.setLoading(true);
     trackEvent('summon_attempt');
 
-    try {
-        // 1. Расчет результата (мозг)
-        const persona = gacha.getRoll(gameState);
-        gameState.save();
+    const startTime = Date.now();
+    const minimumWait = 1200; // 1.2 секунды анимации
 
-        // 2. Получение данных с сервера (сеть)
+    try {
+        // 1. Делаем ролл
+        const persona = gacha.getRoll(gameState);
+
+        // 2. Начинаем загрузку картинки (параллельно анимации)
         const imgUrl = await api.fetchCatImage(persona.tag);
 
-        // 3. Отображение (интерфейс)
-        ui.renderResult(imgUrl, persona, gameState);
+        // 3. Вычисляем, сколько еще нужно подождать до конца тряски
+        const elapsedTime = Date.now() - startTime;
+        const remainingWait = Math.max(0, minimumWait - elapsedTime);
 
-        // 4. Аналитика в БД (статистика)
-        api.sendStats(persona);
+        // Ждем остаток времени и только ТОГДА обновляем экран
+        setTimeout(() => {
+            ui.renderResult(imgUrl, persona, gameState);
+            gameState.save(); // Сохраняем стейт только при успехе
+            api.sendStats(persona);
+        }, remainingWait);
 
     } catch (err) {
         ui.showError();
@@ -31,6 +43,9 @@ async function handleSummon(event) {
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('summon-btn');
     if (btn) btn.onclick = handleSummon;
+    
+    // Первый запуск
+    handleSummon();
 
     trackEvent('app_init', { user_id: getUserId() });
 });
