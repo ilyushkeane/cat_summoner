@@ -1,5 +1,6 @@
 import { gameState, getUserId } from './frontend/storage.js';
 import { trackEvent } from './frontend/analytics.js';
+import { initInfoModal } from './frontend/info.js';
 import * as gacha from './frontend/gacha.js';
 import * as api from './frontend/api.js';
 import * as ui from './frontend/ui.js';
@@ -37,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('summon-btn');
     if (btn) btn.onclick = handleSummon;
     
+    initInfoModal();
+
     // --- ПРОВЕРКА СОСТОЯНИЯ ПРИ ВХОДЕ ---
     ui.updateCounterDisplay(gameState); 
 

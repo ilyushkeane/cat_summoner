@@ -16,7 +16,8 @@
 }
 
 body {
-    font-family: var(--font-main); /* Основной мягкий шрифт */
+    font-family: var(--font-main);
+    /* Основной мягкий шрифт */
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     min-height: 100vh;
     display: flex;
@@ -24,7 +25,8 @@ body {
     align-items: center;
     color: var(--text);
     padding: 20px;
-    -webkit-font-smoothing: antialiased; /* Улучшает отрисовку на Mac/iOS */
+    -webkit-font-smoothing: antialiased;
+    /* Улучшает отрисовку на Mac/iOS */
     -moz-osx-font-smoothing: grayscale;
 }
 
@@ -35,10 +37,11 @@ body {
 }
 
 header h1 {
-    font-family: var(--font-headers); /* Акцентный шрифт для заголовка */
+    font-family: var(--font-headers);
+    /* Акцентный шрифт для заголовка */
     font-size: 2.2rem;
     color: white;
-    text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
     margin-bottom: 0.5rem;
 }
 
@@ -53,9 +56,10 @@ header p {
 /* Карточка */
 .gacha-card {
     background: var(--card-bg);
-    border-radius: 25px; /* Чуть более скругленные углы */
+    border-radius: 25px;
+    /* Чуть более скругленные углы */
     padding: 15px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s ease;
     overflow: hidden;
 }
@@ -63,7 +67,8 @@ header p {
 .image-container {
     width: 100%;
     aspect-ratio: 1 / 1;
-    background-color: #f8f9fa; /* Светлый фон для пустых полей */
+    background-color: #f8f9fa;
+    /* Светлый фон для пустых полей */
     border-radius: 15px;
     overflow: hidden;
     position: relative;
@@ -76,11 +81,11 @@ header p {
     width: 100%;
     height: 100%;
     /* contain — чтобы котик был виден полностью без обрезки */
-    object-fit: cover; 
+    object-fit: cover;
     display: block;
     transition: opacity 0.3s;
     /* На случай, если картинка прозрачная или меньше контейнера */
-    background-color: #f8f9fa; 
+    background-color: #f8f9fa;
 }
 
 
@@ -138,7 +143,7 @@ header p {
     font-weight: 800;
     color: var(--accent);
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transition: all 0.2s;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -146,7 +151,7 @@ header p {
 
 .summon-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .summon-btn:active {
@@ -159,30 +164,312 @@ header p {
     transform: none;
 }
 
+/* Кнопка инфо */
+.info-btn {
+    background: linear-gradient(135deg, var(--accent) 0%, #ff4d4d 100%);
+    border: none;
+    color: white;
+    border-radius: 50px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+
+    /* ВОТ ТУТ РЕГУЛИРУЕМ ОТСТУПЫ */
+    margin-top: 12px;
+    /* Увеличили отступ сверху от цифр */
+    margin-bottom: 2px;
+    /* Минимальный отступ снизу до края плашки */
+
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.info-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(255, 107, 107, 0.4);
+}
+
+/* Модальное окно */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    /* Размытие фона как в iOS */
+}
+
+.modal-content {
+    position: relative;
+    background: #ffffff;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    border-radius: 32px;
+    padding: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(30px) scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.info-btn {
+    background: linear-gradient(135deg, var(--accent) 0%, #ff4d4d 100%);
+    border: none;
+    color: white;
+    border-radius: 50px;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+    margin-bottom: 10px;
+    transition: 0.3s;
+}
+
+/* Контент модалки */
+.modal-content {
+    position: relative;
+    background: #fdfdfd;
+    padding: 20px;
+    border-radius: 30px;
+    max-width: 95%;
+    width: 450px;
+    max-height: 85vh;
+    /* Ограничиваем высоту */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+}
+
+.modal-scroll-area {
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Кнопка закрытия (новая, понятная) */
+.modal-close-btn {
+    position: absolute;
+    top: -60px;
+    /* Вынесли над окном на десктопе, либо оставим внутри на мобилках */
+    right: 0;
+    background: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    color: var(--text);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: 0.2s;
+}
+
+.modal-close-btn:hover {
+    transform: scale(1.05);
+    background: var(--secondary);
+}
+
+/* На мобильных устройствах кнопку закрытия лучше прижать к углу внутри */
+@media (max-height: 700px),
+(max-width: 500px) {
+    .modal-close-btn {
+        top: 16px;
+        right: 16px;
+        padding: 8px 12px;
+        z-index: 10;
+        background: #f0f0f0;
+    }
+
+    .modal-close-btn span {
+        display: none;
+    }
+
+    /* Оставляем только крестик на мобилах */
+}
+
+modal-header h2 {
+    font-family: var(--font-headers);
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: var(--text);
+}
+
+.modal-scroll-area {
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Стилизация скроллбара */
+.modal-scroll-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-scroll-area::-webkit-scrollbar-thumb {
+    background: var(--secondary);
+    border-radius: 10px;
+}
+
+.modal-section {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.modal-section h2 {
+    font-family: var(--font-headers);
+    color: var(--text);
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--secondary);
+    display: inline-block;
+}
+
+/* Баннер гаранта */
+.pity-banner {
+    background: #fff4e5;
+    border: 1px dashed #ff9800;
+    color: #e68a00;
+    padding: 10px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Сетка персонажей */
+.personalities-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    text-align: left;
+}
+
+.persona-item {
+    background: white;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.persona-item .p-title {
+    font-weight: 800;
+    font-size: 0.8rem;
+    color: var(--text);
+}
+
+.persona-item .p-rarity {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Цвета редкостей для списка */
+.p-rare-common {
+    color: #888;
+}
+
+.p-rare-rare {
+    color: #007bff;
+}
+
+.p-rare-epic {
+    color: #9c27b0;
+}
+
+.p-rare-legendary {
+    color: #ff9800;
+}
+
 /* Анимация тряски (эффект гачи) */
 .shake-anim {
-    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
 }
 
 @keyframes shake {
-  10%, 90% { transform: translate3d(-1px, 0, 0) rotate(-1deg); }
-  20%, 80% { transform: translate3d(2px, 0, 0) rotate(2deg); }
-  30%, 50%, 70% { transform: translate3d(-4px, 0, 0) rotate(-4deg); }
-  40%, 60% { transform: translate3d(4px, 0, 0) rotate(4deg); }
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0) rotate(-1deg);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0) rotate(2deg);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0) rotate(-4deg);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0) rotate(4deg);
+    }
 }
 
 /* Стиль для счетчика */
 .stats-badge {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
+    /* Располагаем текст и кнопку друг под другом */
+    align-items: center;
     background: rgba(255, 255, 255, 0.2);
-    padding: 8px 20px;
+    padding: 12px 25px 8px 25px;
+    /* Увеличили верхний паддинг (12) и уменьшили нижний (8) */
     border-radius: 50px;
     color: white;
-    font-size: 0.9rem;
-    font-weight: 600;
     margin-bottom: 20px;
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stats-badge>div:first-child {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 /* Добавим небольшое свечение для легендарной карточки */
@@ -192,20 +479,167 @@ header p {
 }
 
 /* Стили для редкости */
-.rare-common { color: #888; border: 1px solid #888; background: white; }
-.rare-rare { color: #007bff; border: 1px solid #007bff; background: #e6f2ff; }
-.rare-legendary { color: #ff9800; border: 1px solid #ff9800; background: #fff4e5; box-shadow: 0 0 10px #ff980050; }
+.rare-common {
+    color: #888;
+    border: 1px solid #888;
+    background: white;
+}
+
+.rare-rare {
+    color: #007bff;
+    border: 1px solid #007bff;
+    background: #e6f2ff;
+}
+
+.rare-legendary {
+    color: #ff9800;
+    border: 1px solid #ff9800;
+    background: #fff4e5;
+    box-shadow: 0 0 10px #ff980050;
+}
 
 /* Эпическая редкость (Фиолетовый стиль) */
-.rare-epic { 
-    color: #9c27b0; 
-    border: 1px solid #9c27b0; 
-    background: #f3e5f5; 
-    box-shadow: 0 0 10px rgba(156, 39, 176, 0.3); 
+.rare-epic {
+    color: #9c27b0;
+    border: 1px solid #9c27b0;
+    background: #f3e5f5;
+    box-shadow: 0 0 10px rgba(156, 39, 176, 0.3);
 }
 
 /* Свечение для эпической карточки */
 .gacha-card.epic-glow {
     box-shadow: 0 0 30px rgba(156, 39, 176, 0.5);
     border: 2px solid #9c27b0;
+}
+
+/* Секции */
+.section-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    margin: 20px 0 12px;
+    text-align: left;
+}
+
+/* Сетка шансов */
+.odds-modern-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.odds-card {
+    padding: 16px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #f8f9fa;
+    border: 1px solid #eee;
+}
+
+.odds-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.odds-value {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+/* Цвета для карточек шансов */
+.odds-card.common {
+    border-left: 5px solid #ccc;
+}
+
+.odds-card.rare {
+    border-left: 5px solid #007bff;
+    color: #007bff;
+}
+
+.odds-card.epic {
+    border-left: 5px solid #9c27b0;
+    color: #9c27b0;
+}
+
+.odds-card.legendary {
+    border-left: 5px solid #ff9800;
+    color: #ff9800;
+    background: #fff9f2;
+}
+
+.pity-hint {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #666;
+    text-align: left;
+    padding-left: 5px;
+}
+
+/* Список персонажей (Современные строки) */
+.modern-persona-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.modern-persona-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background: white;
+    border-radius: 18px;
+    border: 1px solid #f0f0f0;
+    transition: 0.2s;
+}
+
+.modern-persona-item:hover {
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.p-name {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.p-tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 10px;
+    background: #f0f0f0;
+    color: #777;
+}
+
+/* Специальные цвета тегов */
+.tag-rare {
+    background: #e6f2ff;
+    color: #007bff;
+}
+
+.tag-epic {
+    background: #f3e5f5;
+    color: #9c27b0;
+}
+
+.tag-legendary {
+    background: #fff4e5;
+    color: #ff9800;
+}
+
+/* Скроллбар */
+.modal-scroll-area::-webkit-scrollbar {
+    width: 4px;
+}
+
+.modal-scroll-area::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 10px;
 }
