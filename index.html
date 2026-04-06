@@ -1,43 +1,48 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Твой Кото-Облик</title>
     <!-- Шрифты -->
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Nunito:wght@400;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style/style.css">
     <!-- Библиотека для конфетти (салюта) -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Google Analytics (GA4) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2JZCT651KL"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2JZCT651KL"></script>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2JZCT651KL"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2JZCT651KL"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-  gtag('config', 'G-2JZCT651KL');
-</script>
+        gtag('config', 'G-2JZCT651KL');
+    </script>
 
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript" >
-   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-   m[i].l=1*new Date();
-   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function (m, e, t, r, i, k, a) {
+            m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+            m[i].l = 1 * new Date();
+            for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+            k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+        })
+            (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-   ym(107060992, "init", { // Твой ID
-        clickmap:true,
-        trackLinks:true,
-        accurateTrackBounce:true,
-        webvisor:true // Вебвизор ОБЯЗАТЕЛЬНО — сможешь смотреть видео кликов
-   });
-</script>
+        ym(107060992, "init", { // Твой ID
+            clickmap: true,
+            trackLinks: true,
+            accurateTrackBounce: true,
+            webvisor: true // Вебвизор ОБЯЗАТЕЛЬНО — сможешь смотреть видео кликов
+        });
+    </script>
 </head>
+
 <body>
 
     <div class="container">
@@ -46,18 +51,27 @@
             <p>Узнай свой истинный облик в мире котиков</p>
             <!-- Счётчик -->
             <div class="stats-badge">
-    <span>🐾 Призвано: <span id="total-count">0</span></span>
-    <span style="margin-left: 15px; color: #ff9800;">🌟 Легендарок: <span id="leg-count">0</span></span>
-</div>
+                <!-- Первая строка: счетчики -->
+                <div>
+                    <span>🐾 Призвано: <span id="total-count">0</span></span>
+                    <span style="color: #ff9800;">🌟 Легендарок: <span id="leg-count">0</span></span>
+                </div>
+
+                <!-- Вторая строка: кнопка -->
+                <button id="info-open-btn" class="info-btn">
+                    <i>ⓘ</i> Информация
+                </button>
+            </div>
         </header>
 
         <main>
             <div class="gacha-card" id="card">
                 <div class="image-container">
-                    <img id="cat-image" src="https://cataas.com/cat?width=400&height=400" alt="Твой котик появится здесь">
+                    <img id="cat-image" src="https://cataas.com/cat?width=400&height=400"
+                        alt="Твой котик появится здесь">
                     <div class="loader" id="loader">Ищем котика...</div>
                 </div>
-                
+
                 <div class="card-content">
                     <h2 id="cat-title">???</h2>
                     <p id="cat-desc">Нажми на лапку, чтобы совершить призыв!</p>
@@ -66,11 +80,63 @@
             </div>
 
             <button type="button" id="summon-btn" class="summon-btn" onclick="return false;">
-                    <span>🐾 Призвать котика 🐾</span>
+                <span>🐾 Призвать котика 🐾</span>
             </button>
         </main>
     </div>
 
-    <script type="module" src="app.js?v=2"></script>
+    <div id="info-modal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <!-- Кнопка закрытия теперь заметная -->
+        <button id="info-close-btn" class="modal-close-btn" aria-label="Закрыть">
+            <span>Закрыть</span>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        
+        <div class="modal-header">
+            <h2>Справочник призыва</h2>
+        </div>
+
+        <div class="modal-scroll-area">
+            <section class="modal-section">
+                <h3 class="section-title">Вероятности</h3>
+                <div class="odds-modern-grid">
+                    <div class="odds-card common">
+                        <span class="odds-label">Обычный</span>
+                        <span class="odds-value">55%</span>
+                    </div>
+                    <div class="odds-card rare">
+                        <span class="odds-label">Редкий</span>
+                        <span class="odds-value">25%</span>
+                    </div>
+                    <div class="odds-card epic">
+                        <span class="odds-label">Эпик</span>
+                        <span class="odds-value">15%</span>
+                    </div>
+                    <div class="odds-card legendary">
+                        <span class="odds-label">Легенда</span>
+                        <span class="odds-value">5%</span>
+                    </div>
+                </div>
+                <div class="pity-hint">
+                    ✨ Система «удачи»: гарант на 20-й призыв
+                </div>
+            </section>
+
+            <section class="modal-section">
+                <h3 class="section-title">Список всех персонажей</h3>
+                <div id="personalities-list" class="modern-persona-list">
+                    <!-- Сюда JS вставит элементы -->
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+    <script type="module" src="app.js?v=4"></script>
 </body>
+
 </html>
