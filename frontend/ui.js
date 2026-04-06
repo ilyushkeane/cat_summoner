@@ -12,10 +12,15 @@ const elements = {
     legCount: document.getElementById('leg-count')
 };
 
+// --- НОВАЯ ФУНКЦИЯ ДЛЯ ПРОВЕРКИ ---
+export function updateCounterDisplay(state) {
+    if (elements.totalCount) elements.totalCount.textContent = state.summons;
+    if (elements.legCount) elements.legCount.textContent = state.legendaries;
+}
+
 export function setLoading(isLoading) {
     if (!elements.btn) return;
     elements.btn.disabled = isLoading;
-    
     if (isLoading) {
         elements.btn.textContent = "Призываем...";
         elements.card?.classList.add('shake-anim');
@@ -41,24 +46,26 @@ export function renderResult(imgUrl, persona, state) {
 
         elements.card?.classList.remove('legendary-glow', 'epic-glow');
 
+        // Обновляем состояние объекта
         state.summons++;
-        if (elements.totalCount) elements.totalCount.textContent = state.summons;
-
+        
         if (persona.class === 'epic') {
             elements.card?.classList.add('epic-glow');
             triggerConfetti('epic');
         }
 
         if (persona.class === 'legendary') {
-            state.legendaries++;
-            if (elements.legCount) elements.legCount.textContent = state.legendaries;
+            state.legendaries++; // Прибавляем в память
             elements.card?.classList.add('legendary-glow');
             triggerConfetti('legendary');
         }
+
+        // ВЫЗЫВАЕМ ОБНОВЛЕНИЕ ЭКРАНА
+        updateCounterDisplay(state);
+
     } catch (err) {
-        console.error("Ошибка при отрисовке:", err);
+        console.error("Ошибка отрисовки:", err);
     } finally {
-        // Кнопка ДОЛЖНА включиться в любом случае
         setLoading(false);
     }
 }

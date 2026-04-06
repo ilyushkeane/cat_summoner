@@ -18,7 +18,7 @@ async function handleSummon(event) {
         const imgUrl = await api.fetchCatImage(persona.tag);
 
         const elapsedTime = Date.now() - startTime;
-        const wait = Math.max(0, 1200 - elapsedTime);
+        const wait = Math.max(0, 800 - elapsedTime);
 
         setTimeout(() => {
             ui.renderResult(imgUrl, persona, gameState);
@@ -28,9 +28,8 @@ async function handleSummon(event) {
         }, wait);
 
     } catch (err) {
-        console.error("Ошибка в handleSummon:", err);
+        console.error("Ошибка:", err);
         ui.showError();
-        trackEvent('technical_error', { message: err.message });
     }
 }
 
@@ -38,8 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('summon-btn');
     if (btn) btn.onclick = handleSummon;
     
-    // Первый призыв при входе
-    handleSummon();
+    // --- ПРОВЕРКА СОСТОЯНИЯ ПРИ ВХОДЕ ---
+    ui.updateCounterDisplay(gameState); 
 
     trackEvent('app_init', { user_id: getUserId() });
 });
