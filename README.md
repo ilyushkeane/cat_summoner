@@ -54,11 +54,3 @@ graph TD
         DB -->|Data Source| DataLens[Yandex DataLens]
         DataLens -->|Visualization| Dashboard[Live Dashboard]
     end
-
-## 🛠 Технологический стек
-Слой	Технологии
-Frontend	JavaScript (ES6+), CSS3 (Glassmorphism), HTML5, Canvas-Confetti
-Backend	Python 3.12, FastAPI, SQLAlchemy, Pydantic, Gunicorn
-DevOps	Ubuntu Linux, Nginx, Systemd, Certbot (SSL)
-Database	PostgreSQL
-Analytics	Yandex Metrika, Google Analytics 4, Yandex DataLens
