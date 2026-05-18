@@ -12,10 +12,11 @@ export function initInfoModal() {
     // Генерируем список персонажей один раз при загрузке
     renderPersonalities();
 
-    openBtn.onclick = () => {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    };
+   openBtn.onclick = () => {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    sendEvent('open_info'); // ТРЕКИНГ
+};
 
     closeBtn.onclick = closeModal;
     overlay.onclick = closeModal;
