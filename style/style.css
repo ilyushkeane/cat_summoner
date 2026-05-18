@@ -537,6 +537,23 @@ modal-header h2 {
     align-items: flex-start;
     background: #f8f9fa;
     border: 1px solid #eee;
+    min-height: 120px; /* Добавили минимальную высоту для симметрии */
+    transition: transform 0.2s;
+}
+
+.odds-desc {
+    margin-top: 8px;
+    font-size: 0.75rem; /* Маленький аккуратный шрифт */
+    line-height: 1.3;
+    color: #666;
+    text-align: left;
+    font-weight: 400;
+}
+
+.odds-card:hover {
+    transform: translateY(-2px);
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
 .odds-label {
