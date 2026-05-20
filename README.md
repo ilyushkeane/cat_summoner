@@ -37,7 +37,9 @@ graph TD
         DB -->|Cron Job| Script[Report Generator]
         Script -->|Excel| TG[Telegram Admin Bot]
     end
+
 ---
+
 ## 📊 Модель Базы Данных (Star Schema)
 erDiagram
     USERS ||--o{ SUMMONS : "performs"
@@ -67,7 +69,9 @@ erDiagram
         string event_name "Действие (open_info, etc)"
         datetime timestamp "Время события"
     }
+
 ---
+
 ## 🚀 Ключевые Технические Фичи
 ### 🎮 Геймдизайн
 Smart Pity System: Алгоритм гарантированного выпадения легендарного персонажа на 20-й призыв внутри сессии.
@@ -80,6 +84,7 @@ Automated Reporting: Система еженедельной выгрузки д
 Live BI: Интеграция с Yandex DataLens для мониторинга Drop-rate и DAU в реальном времени.
 
 ---
+
 ## 📁 Структура Проекта
 ├── backend/            # Логика подключения к БД и SQLAlchemy модели
 ├── frontend/           # Модульная логика клиента (API, UI, Storage)
