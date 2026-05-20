@@ -69,8 +69,6 @@ erDiagram
         datetime timestamp "Время события"
     }
 
-end
-
 ```
 
 ## 🚀 Ключевые Технические Фичи  
