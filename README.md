@@ -38,7 +38,8 @@ graph TD
         Script -->|Excel| TG[Telegram Admin Bot]
     end
 ```
-
+## 📊 Модель Базы Данных (Star Schema)
+```mermaid
 erDiagram
     USERS ||--o{ SUMMONS : "performs"
     USERS ||--o{ UI_EVENTS : "triggers"
@@ -67,3 +68,5 @@ erDiagram
         string event_name "Действие (open_info, etc)"
         datetime timestamp "Время события"
     }
+end
+```
