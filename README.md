@@ -68,7 +68,9 @@ erDiagram
         string event_name "Действие (open_info, etc)"
         datetime timestamp "Время события"
     }
+
 end
+
 ```
 
 ## 🚀 Ключевые Технические Фичи  
