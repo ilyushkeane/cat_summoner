@@ -37,10 +37,9 @@ graph TD
         DB -->|Cron Job| Script[Report Generator]
         Script -->|Excel| TG[Telegram Admin Bot]
     end
-
----
-
-## 📊 Модель Базы Данных (Star Schema)
+📊 Модель Базы Данных (Star Schema)
+code
+Mermaid
 erDiagram
     USERS ||--o{ SUMMONS : "performs"
     USERS ||--o{ UI_EVENTS : "triggers"
@@ -69,23 +68,19 @@ erDiagram
         string event_name "Действие (open_info, etc)"
         datetime timestamp "Время события"
     }
-
----
-
-## 🚀 Ключевые Технические Фичи
-### 🎮 Геймдизайн
+🚀 Ключевые Технические Фичи
+🎮 Геймдизайн
 Smart Pity System: Алгоритм гарантированного выпадения легендарного персонажа на 20-й призыв внутри сессии.
 Visual Feedback: Динамическая система салютов (Confetti) и свечения карточек, зависящая от редкости.
 Image Preloading: Асинхронная предзагрузка изображений перед показом, исключающая "мерцание" интерфейса.
-### 📈 Аналитика и BI
+📈 Аналитика и BI
 Multi-Level Tracking: Комбинация внешней аналитики (YM/GA4) и собственного логирования в SQL.
 Session Intelligence: Использование session_id для анализа глубины просмотра и времени сессии.
 Automated Reporting: Система еженедельной выгрузки данных в Excel с доставкой через Telegram-бота.
 Live BI: Интеграция с Yandex DataLens для мониторинга Drop-rate и DAU в реальном времени.
-
----
-
-## 📁 Структура Проекта
+📁 Структура Проекта
+code
+Text
 ├── backend/            # Логика подключения к БД и SQLAlchemy модели
 ├── frontend/           # Модульная логика клиента (API, UI, Storage)
 ├── static/cats/        # Модерируемый архив изображений по тегам
@@ -93,5 +88,3 @@ Live BI: Интеграция с Yandex DataLens для мониторинга D
 ├── main.py             # Точка входа FastAPI сервера
 ├── app.js              # Главный оркестратор фронтенда
 └── index.html          # Стартовая страница
-
---
