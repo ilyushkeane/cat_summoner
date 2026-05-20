@@ -1,22 +1,42 @@
-Привет!    
-# 🐾 Gachapets: Fullstack Gacha Experience
+# 🐾 Gachapets: Fullstack Analytics & Gacha System
 
 <p align="center">
-  <img src="img/preview.png" alt="Gachapets Preview" width="600">
+  <img src="https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-Production-009688?logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/PostgreSQL-Data--Driven-336791?logo=postgresql&logoColor=white" alt="Postgres">
+  <img src="https://img.shields.io/badge/JavaScript-Modular%20ES6-F7DF1E?logo=javascript&logoColor=black" alt="JS">
+  <img src="https://img.shields.io/badge/Infrastructure-Nginx%20%7C%20SSL-009639?logo=nginx&logoColor=white" alt="Nginx">
 </p>
 
-<p align="center">
-  <a href="https://gachapets.ru"><strong>🚀 Посмотреть Live Demo</strong></a> | 
-  <a href="https://datalens.yandex/49wwzmqrnts0o"><strong>📊 Открытая аналитика</strong></a>
-</p>
+**Gachapets** — это высоконагруженное (по архитектуре) Fullstack-приложение, сочетающее игровую механику "Гача" и комплексную систему сбора и анализа пользовательских данных. Проект демонстрирует переход от простых скриптов к масштабируемой модульной архитектуре.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Status-Production--Ready-success?style=for-the-badge" alt="Status">
-  <img src="https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/Database-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="Postgres">
-  <img src="https://img.shields.io/badge/Frontend-ES6%20Modules-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JS">
-</p>
+---
 
+## 🏗 Архитектура приложения
+
+Система построена по принципу разделения ответственности. Nginx выступает в роли обратного прокси, обеспечивая безопасность и высокую скорость отдачи статического контента.
+
+```mermaid
+graph TD
+    User((Пользователь)) -->|HTTPS / 443| Nginx{Nginx Proxy}
+    
+    subgraph "Frontend (Client Side)"
+        Nginx -->|Static| HTML[index.html / CSS]
+        HTML -->|Modules| JS[Modular JS App]
+        JS -->|Client Stats| YM[Yandex Metrika / GA4]
+    end
+
+    subgraph "Backend (Server Side)"
+        Nginx -->|API Proxy| FastAPI[FastAPI Server]
+        FastAPI -->|ORM| DB[(PostgreSQL)]
+        Nginx -->|Images| Storage[Local Image Archive]
+    end
+
+    subgraph "BI & Reporting"
+        DB -->|Connector| DataLens[Yandex DataLens BI]
+        DB -->|Cron Job| Script[Report Generator]
+        Script -->|Excel| TG[Telegram Admin Bot]
+    end
 ---
 
 ## 🌟 О проекте
@@ -54,3 +74,35 @@ graph TD
         DB -->|Data Source| DataLens[Yandex DataLens]
         DataLens -->|Visualization| Dashboard[Live Dashboard]
     end
+---
+
+### Модель Базы Данных (Star Schema)
+erDiagram
+    USERS ||--o{ SUMMONS : "performs"
+    USERS ||--o{ UI_EVENTS : "triggers"
+
+    USERS {
+        string user_uuid PK "ID из LocalStorage"
+        datetime first_seen "Дата регистрации"
+        string referrer "Источник трафика"
+        boolean is_mobile "Флаг устройства"
+        string user_agent "Данные браузера"
+    }
+
+    SUMMONS {
+        int id PK
+        string user_uuid FK "Связь с профилем"
+        string session_id "ID текущего визита"
+        string cat_title "Имя персонажа"
+        string rarity "Редкость"
+        datetime timestamp "Время призыва"
+    }
+
+    UI_EVENTS {
+        int id PK
+        string user_uuid FK "Связь с профилем"
+        string session_id "ID текущего визита"
+        string event_name "Действие (open_info, etc)"
+        datetime timestamp "Время события"
+    }
+---
