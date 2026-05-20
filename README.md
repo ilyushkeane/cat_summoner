@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/Infrastructure-Nginx%20%7C%20SSL-009639?logo=nginx&logoColor=white" alt="Nginx">
 </p>
 
-**Gachapets** — это высоконагруженное (по архитектуре) Fullstack-приложение, сочетающее игровую механику "Гача" и комплексную систему сбора и анализа пользовательских данных. Проект демонстрирует переход от простых скриптов к масштабируемой модульной архитектуре.
+**Gachapets** — это высоконагруженное по архитектуре Fullstack-приложение, сочетающее игровую механику "Гача" и комплексную систему сбора и анализа данных. Проект демонстрирует переход от простых скриптов к масштабируемой модульной архитектуре.
 
 ---
 
@@ -38,45 +38,7 @@ graph TD
         Script -->|Excel| TG[Telegram Admin Bot]
     end
 ---
-
-### 🌟 О проекте
-
-**Gachapets** — это высокотехнологичное Fullstack-приложение, имитирующее механику призыва персонажей из популярных Gacha-игр. Проект объединяет в себе современный UI/UX, модульную архитектуру и глубокую систему бизнес-аналитики (BI).
-
-### ✨ Ключевые фичи
-- **🎯 Smart Pity System:** Алгоритм «защиты от невезения» — гарантированное выпадение легендарного персонажа на 20-й призыв.
-- **📦 Модульная архитектура:** Чистый код на стороне клиента (ES6 Modules) и сервера (FastAPI), разделенный по принципам SOLID.
-- **⚡ Оптимизированная доставка контента:** Раздача медиа-файлов через Nginx напрямую, что обеспечивает мгновенную загрузку даже тяжелых GIF.
-- **📊 BI-интеграция:** Сквозная аналитика от клика пользователя до графиков в **Yandex DataLens**.
-- **🛡 Безопасность:** Полная поддержка HTTPS (SSL от Let's Encrypt) и изоляция секретов через `.env`.
-
----
-
-## 📐 Архитектура системы
-
-```mermaid
-graph TD
-    User((Пользователь)) -->|HTTPS| Nginx{Nginx Reverse Proxy}
-    
-    subgraph "Frontend (Client)"
-        Nginx -->|Static Content| HTML[index.html / CSS]
-        HTML -->|ES6 Modules| JS_App[app.js / logic]
-        JS_App -->|Analytics| YM[Yandex Metrika / GA4]
-    end
-
-    subgraph "Backend (VDS Server)"
-        Nginx -->|API Proxy| FastAPI[FastAPI Server]
-        FastAPI -->|Log Event| DB[(PostgreSQL)]
-        Nginx -->|Static Images| Disk[Local Image Archive]
-    end
-
-    subgraph "Business Intelligence"
-        DB -->|Data Source| DataLens[Yandex DataLens]
-        DataLens -->|Visualization| Dashboard[Live Dashboard]
-    end
----
-
-### Модель Базы Данных (Star Schema)
+## 📊 Модель Базы Данных (Star Schema)
 erDiagram
     USERS ||--o{ SUMMONS : "performs"
     USERS ||--o{ UI_EVENTS : "triggers"
@@ -106,3 +68,25 @@ erDiagram
         datetime timestamp "Время события"
     }
 ---
+## 🚀 Ключевые Технические Фичи
+### 🎮 Геймдизайн
+Smart Pity System: Алгоритм гарантированного выпадения легендарного персонажа на 20-й призыв внутри сессии.
+Visual Feedback: Динамическая система салютов (Confetti) и свечения карточек, зависящая от редкости.
+Image Preloading: Асинхронная предзагрузка изображений перед показом, исключающая "мерцание" интерфейса.
+### 📈 Аналитика и BI
+Multi-Level Tracking: Комбинация внешней аналитики (YM/GA4) и собственного логирования в SQL.
+Session Intelligence: Использование session_id для анализа глубины просмотра и времени сессии.
+Automated Reporting: Система еженедельной выгрузки данных в Excel с доставкой через Telegram-бота.
+Live BI: Интеграция с Yandex DataLens для мониторинга Drop-rate и DAU в реальном времени.
+
+---
+## 📁 Структура Проекта
+├── backend/            # Логика подключения к БД и SQLAlchemy модели
+├── frontend/           # Модульная логика клиента (API, UI, Storage)
+├── static/cats/        # Модерируемый архив изображений по тегам
+├── style/              # Стили и анимации
+├── main.py             # Точка входа FastAPI сервера
+├── app.js              # Главный оркестратор фронтенда
+└── index.html          # Стартовая страница
+
+--
