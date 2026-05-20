@@ -37,6 +37,7 @@ graph TD
         DB -->|Cron Job| Script[Report Generator]
         Script -->|Excel| TG[Telegram Admin Bot]
     end
+```
 
 erDiagram
     USERS ||--o{ SUMMONS : "performs"
