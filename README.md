@@ -37,3 +37,32 @@ graph TD
         DB -->|Cron Job| Script[Report Generator]
         Script -->|Excel| TG[Telegram Admin Bot]
     end
+
+erDiagram
+    USERS ||--o{ SUMMONS : "performs"
+    USERS ||--o{ UI_EVENTS : "triggers"
+
+    USERS {
+        string user_uuid PK "ID из LocalStorage"
+        datetime first_seen "Дата регистрации"
+        string referrer "Источник трафика"
+        boolean is_mobile "Флаг устройства"
+        string user_agent "Данные браузера"
+    }
+
+    SUMMONS {
+        int id PK
+        string user_uuid FK "Связь с профилем"
+        string session_id "ID текущего визита"
+        string cat_title "Имя персонажа"
+        string rarity "Редкость"
+        datetime timestamp "Время призыва"
+    }
+
+    UI_EVENTS {
+        int id PK
+        string user_uuid FK "Связь с профилем"
+        string session_id "ID текущего визита"
+        string event_name "Действие (open_info, etc)"
+        datetime timestamp "Время события"
+    }
