@@ -1,5 +1,5 @@
 import { gameState, getUserId } from './frontend/storage.js';
-import { trackEvent } from './frontend/analytics.js';
+import { trackEvent, setUserParams } from './frontend/analytics.js';
 import { initInfoModal } from './frontend/info.js';
 import * as gacha from './frontend/gacha.js';
 import * as api from './frontend/api.js';
@@ -35,6 +35,13 @@ async function handleSummon(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    // 2. Получаем ID пользователя
+    const uuid = getUserId();
+    
+    // 3. ПЕРЕДАЕМ ID В ЯНДЕКС (Связующее звено)
+    setUserParams(uuid); 
+
     const btn = document.getElementById('summon-btn');
     if (btn) btn.onclick = handleSummon;
     
@@ -43,5 +50,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ПРОВЕРКА СОСТОЯНИЯ ПРИ ВХОДЕ ---
     ui.updateCounterDisplay(gameState); 
 
-    trackEvent('app_init', { user_id: getUserId() });
+    trackEvent('app_init', { user_id: uuid });
 });

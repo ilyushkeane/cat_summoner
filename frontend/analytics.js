@@ -28,12 +28,13 @@ export function trackEvent(eventName, params = {}) {
  * Помогает связать UUID из базы с сессией в Метрике
  * @param {string} userId - UUID пользователя
  */
-export function setUserParams(userId) {
+export function setUserParams(uuid) {
     if (typeof ym === 'function') {
-        ym(METRICA_ID, 'userParams', { userID: userId });
+        ym(METRICA_ID, 'userParams', { userID: uuid });
+        console.log("🔗 Связка с Метрикой установлена для:", uuid);
     }
     
     if (typeof gtag === 'function') {
-        gtag('set', 'user_properties', { user_id: userId });
+        gtag('set', 'user_properties', { user_id: uuid });
     }
 }
