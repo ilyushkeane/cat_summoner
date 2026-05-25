@@ -1,5 +1,5 @@
 import { API_URL } from './config.js';
-import { getUserId } from './storage.js';
+import { getUserId, getSessionId } from './storage.js';
 
 export async function fetchCatImage(tag) {
     const url = `${API_URL}/get_cat/${tag}?t=${Date.now()}`;

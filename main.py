@@ -7,7 +7,7 @@ from typing import Optional
 
 # Импортируем нашу модульную систему бэкенда
 from backend.database import SessionLocal, engine, Base
-from backend.models import User, Summon, UIEvent
+from backend.models import User, Summon, UIEvent, MetricaLog
 
 # Автоматически создаем/обновляем таблицы в PostgreSQL при запуске
 Base.metadata.create_all(bind=engine)

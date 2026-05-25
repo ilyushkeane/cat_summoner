@@ -1,4 +1,5 @@
 import { personalities } from './personalities.js';
+import { sendEvent } from './api.js';
 
 const modal = document.getElementById('info-modal');
 const openBtn = document.getElementById('info-open-btn');
@@ -12,15 +13,15 @@ export function initInfoModal() {
     // Генерируем список персонажей один раз при загрузке
     renderPersonalities();
 
-   openBtn.onclick = () => {
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    sendEvent('open_info'); // ТРЕКИНГ
-};
+    openBtn.onclick = () => {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        sendEvent('open_info'); // ТРЕКИНГ
+    };
 
     closeBtn.onclick = closeModal;
     overlay.onclick = closeModal;
-    
+
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeModal();
     });
