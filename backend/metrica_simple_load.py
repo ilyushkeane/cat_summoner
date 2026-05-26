@@ -23,67 +23,87 @@ def decode_uuid(val):
         return None
 
 def fetch_metrica():
+    if not TOKEN:
+        print("❌ Ошибка: YANDEX_METRICA_TOKEN не найден в .env")
+        return
+
     url = "https://api-metrika.yandex.net/stat/v1/data"
     
-    # Список полей (Dimensions - характеристики, Metrics - цифры)
+    # Мы оставили ровно 10 самых важных полей (это лимит API)
+    dimensions = [
+        "ym:s:visitID",            # 1
+        "ym:s:dateTime",           # 2
+        "ym:s:clientID",           # 3
+        "ym:s:params64",           # 4 (наш user_uuid)
+        "ym:s:regionCity",         # 5
+        "ym:s:deviceCategory",     # 6
+        "ym:s:operatingSystemRoot",# 7
+        "ym:s:lastTrafficSource",  # 8
+        "ym:s:referer",            # 9
+        "ym:s:lastUTMSource"       # 10
+    ]
+    
+    metrics = [
+        "ym:s:visitDuration",
+        "ym:s:pageViews",
+        "ym:s:isBounce"
+    ]
+
     params = {
         "ids": COUNTER_ID,
-        "date1": "7daysago", # За какой период берем
+        "date1": "7daysago",
         "date2": "today",
         "accuracy": "full",
-        "dimensions": (
-            "ym:s:visitID,ym:s:dateTime,ym:s:clientID,ym:s:params64,"
-            "ym:s:regionCountry,ym:s:regionArea,ym:s:regionCity,"
-            "ym:s:deviceCategory,ym:s:operatingSystemRoot,ym:s:browser,"
-            "ym:s:lastTrafficSource,ym:s:lastUTMSource,ym:s:lastUTMMedium,ym:s:lastUTMCampaign,ym:s:referer"
-        ),
-        "metrics": "ym:s:visitDuration,ym:s:pageViews,ym:s:isBounce",
-        "limit": 10000 # Сколько визитов за раз (макс 100к), сейчас 10к
+        "dimensions": ",".join(dimensions),
+        "metrics": ",".join(metrics),
+        "limit": 10000
     }
     
     headers = {"Authorization": f"OAuth {TOKEN}"}
     
-    print("📡 Запрашиваю данные у Яндекса...")
-    res = requests.get(url, params=params, headers=headers)
-    res.raise_for_status()
-    data = res.json()['data']
+    print("📡 Запрашиваю данные у Яндекса (оптимизированный список)...")
+    try:
+        res = requests.get(url, params=params, headers=headers)
+        if res.status_code != 200:
+            print(f"❌ Ошибка Яндекса: {res.status_code}")
+            print(f"Текст ошибки: {res.text}")
+            return
+        data = res.json()['data']
+    except Exception as e:
+        print(f"❌ Ошибка запроса: {e}")
+        return
     
-    # Превращаем сложный JSON Яндекса в плоский список
     rows = []
     for item in data:
         dims = item['dimensions']
         metr = item['metrics']
+        # Наполняем данными согласно новому порядку (dimensions)
         rows.append({
             "visit_id": dims[0]['name'],
             "start_time": dims[1]['name'],
             "client_id": dims[2]['name'],
             "user_uuid": decode_uuid(dims[3]['name']),
-            "country": dims[4]['name'],
-            "region": dims[5]['name'],
-            "city": dims[6]['name'],
-            "device": dims[7]['name'],
-            "os": dims[8]['name'],
-            "browser": dims[9]['name'],
-            "source": dims[10]['name'],
-            "utm_source": dims[11]['name'],
-            "utm_medium": dims[12]['name'],
-            "utm_campaign": dims[13]['name'],
-            "referrer": dims[14]['name'],
+            "city": dims[4]['name'],
+            "device": dims[5]['name'],
+            "os": dims[6]['name'],
+            "source": dims[7]['name'],
+            "referrer": dims[8]['name'],
+            "utm_source": dims[9]['name'],
             "visit_duration": int(metr[0]),
             "page_views": int(metr[1]),
             "is_bounce": bool(metr[2])
         })
 
-    # Загружаем в Pandas и в базу
     df = pd.DataFrame(rows)
     
     if not df.empty:
-        # if_exists='append' добавит новые, но может дублировать. 
-        # На простом уровне это ок, потом можно чистить дубли в SQL.
+        # ВАЖНО: Мы удалили некоторые поля из запроса, 
+        # поэтому в БД в этих колонках (country, region и т.д.) будет NULL.
+        # Это нормально для текущего этапа.
         df.to_sql('metrica_logs', engine, if_exists='replace', index=False)
         print(f"✅ Успешно загружено {len(df)} визитов в таблицу metrica_logs")
     else:
-        print("📭 Данных за этот период нет.")
+        print("📭 Данных от Яндекса пока нет. Проверь счетчик и были ли заходы на сайт.")
 
 if __name__ == "__main__":
     fetch_metrica()
