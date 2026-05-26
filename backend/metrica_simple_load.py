@@ -68,24 +68,27 @@ def decode_uuid(val):
         return None
 
 def fetch_metrica():
-    if not TOKEN:
+   if not TOKEN:
         print("❌ Ошибка: YANDEX_METRICA_TOKEN не найден в .env")
         return
 
+    # Вычисляем даты программно (так надежнее)
+    date_today = datetime.now().strftime('%Y-%m-%d')
+    date_start = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+
     url = "https://api-metrika.yandex.net/stat/v1/data"
     
-    # Мы оставили ровно 10 самых важных полей (это лимит API)
     dimensions = [
-        "ym:s:visitID",            # 1
-        "ym:s:dateTime",           # 2
-        "ym:s:clientID",           # 3
-        "ym:s:params64",           # 4 (наш user_uuid)
-        "ym:s:regionCity",         # 5
-        "ym:s:deviceCategory",     # 6
-        "ym:s:operatingSystemRoot",# 7
-        "ym:s:lastTrafficSource",  # 8
-        "ym:s:referer",            # 9
-        "ym:s:lastUTMSource"       # 10
+        "ym:s:visitID",            
+        "ym:s:dateTime",           
+        "ym:s:clientID",           
+        "ym:s:params64",           
+        "ym:s:regionCity",         
+        "ym:s:deviceCategory",     
+        "ym:s:operatingSystemRoot",
+        "ym:s:lastTrafficSource",  
+        "ym:s:referer",            
+        "ym:s:lastUTMSource"       
     ]
     
     metrics = [
@@ -96,8 +99,8 @@ def fetch_metrica():
 
     params = {
         "ids": COUNTER_ID,
-        "date1": "7daysago",
-        "date2": "today",
+        "date1": date_start, # Будет '2023-xx-xx'
+        "date2": date_today, # Будет '2023-xx-xx'
         "accuracy": "full",
         "dimensions": ",".join(dimensions),
         "metrics": ",".join(metrics),
