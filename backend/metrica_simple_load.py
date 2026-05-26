@@ -1,6 +1,10 @@
 import os
 import requests
 import pandas as pd
+import time
+import io
+import base64
+import json
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
@@ -8,133 +12,122 @@ from pathlib import Path
 from datetime import datetime, timedelta
 import sys
 
-# 1. ОПРЕДЕЛЯЕМ ПУТИ
+# 1. НАСТРОЙКИ ПУТЕЙ И .ENV
 current_dir = Path(__file__).resolve().parent
 base_dir = current_dir.parent
 env_path = base_dir / '.env'
+load_dotenv(dotenv_path=env_path)
 
-if env_path.exists():
-    load_dotenv(dotenv_path=env_path)
-    print(f"✅ Файл .env найден")
-else:
-    print(f"❌ Файл .env НЕ НАЙДЕН")
-
-# 2. СОБИРАЕМ СТРОКУ ПОДКЛЮЧЕНИЯ
+# 2. ПОДКЛЮЧЕНИЕ К БАЗЕ
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_NAME = os.getenv("DB_NAME", "gachapets_db")
-ENV_URL = os.getenv("DATABASE_URL")
-
-if DB_USER and DB_PASS:
-    FINAL_URL = f"postgresql://{DB_USER}:{quote_plus(DB_PASS)}@{DB_HOST}/{DB_NAME}"
-elif ENV_URL:
-    FINAL_URL = ENV_URL
-else:
-    FINAL_URL = "sqlite:///./gachapets.db"
-
-try:
-    engine = create_engine(FINAL_URL)
-    with engine.connect() as conn:
-        print("🔗 Связь с базой данных установлена!")
-except Exception as e:
-    print(f"❌ Ошибка подключения к базе: {e}")
-    sys.exit(1)
+FINAL_URL = f"postgresql://{DB_USER}:{quote_plus(DB_PASS)}@{DB_HOST}/{DB_NAME}"
+engine = create_engine(FINAL_URL)
 
 # 3. НАСТРОЙКИ ЯНДЕКСА
 TOKEN = os.getenv("YANDEX_METRICA_TOKEN")
 COUNTER_ID = "107060992"
+HEADERS = {"Authorization": f"OAuth {TOKEN}"}
 
-def fetch_metrica():
+# Список полей, которые разрешены в Logs API
+FIELDS = [
+    "ym:s:visitID", "ym:s:dateTime", "ym:s:clientID", "ym:s:regionCity",
+    "ym:s:deviceCategory", "ym:s:operatingSystemRoot", "ym:s:lastTrafficSource",
+    "ym:s:referer", "ym:s:params64", "ym:s:visitDuration", "ym:s:pageViews", "ym:s:isBounce"
+]
+
+def decode_uuid(val):
+    try:
+        if not val or val == "" or val == "[]": return None
+        decoded = base64.b64decode(val).decode('utf-8')
+        return json.loads(decoded).get('userID')
+    except:
+        return None
+
+def run_logs_api():
     if not TOKEN:
-        print("❌ Ошибка: YANDEX_METRICA_TOKEN не найден в .env")
+        print("❌ Ошибка: Токен не найден")
         return
 
-    date_today = datetime.now().strftime('%Y-%m-%d')
-    date_start = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+    # Берем данные за вчера и сегодня
+    date_start = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
+    date_end = datetime.now().strftime('%Y-%m-%d')
 
-    url = "https://api-metrika.yandex.net/stat/v1/data"
+    log_url = f"https://api-metrika.yandex.net/management/v1/counter/{COUNTER_ID}/logrequests"
     
-    # dimensions — ровно 10 (максимум)
-    dimensions = [
-        "ym:s:visitID",            # 0
-        "ym:s:dateTime",           # 1
-        "ym:s:clientID",           # 2
-        "ym:s:paramsLevel1",       # 3
-        "ym:s:paramsLevel2",       # 4
-        "ym:s:regionCity",         # 5
-        "ym:s:deviceCategory",     # 6
-        "ym:s:operatingSystemRoot",# 7
-        "ym:s:lastTrafficSource",  # 8
-        "ym:s:referer"             # 9
-    ]
-    
-    # Метрики — исправленные названия для API Отчетов
-    metrics = [
-        "ym:s:avgVisitDurationSeconds", # Продолжительность
-        "ym:s:pageviews",               # Просмотры (все маленькие!)
-        "ym:s:bounceRate"               # Показатель отказов
-    ]
-
+    # А. СОЗДАЕМ ЗАПРОС
+    print(f"📡 Создаю запрос на логи за {date_start} - {date_end}...")
     params = {
-        "ids": COUNTER_ID,
         "date1": date_start,
-        "date2": date_today,
-        "accuracy": "full",
-        "dimensions": ",".join(dimensions),
-        "metrics": ",".join(metrics),
-        "limit": 10000
+        "date2": date_end,
+        "fields": ",".join(FIELDS),
+        "source": "visits"
     }
     
-    headers = {"Authorization": f"OAuth {TOKEN}"}
-    
-    print(f"📡 Запрашиваю данные у Яндекса...")
-    
-    try:
-        res = requests.get(url, params=params, headers=headers)
-        if res.status_code != 200:
-            print(f"❌ Ошибка Яндекса: {res.status_code}")
-            print(f"Текст ошибки: {res.text}")
-            return
-        data = res.json()['data']
-    except Exception as e:
-        print(f"❌ Ошибка запроса: {e}")
+    res = requests.post(log_url, params=params, headers=HEADERS)
+    if res.status_code != 200:
+        print(f"❌ Ошибка создания: {res.text}")
         return
     
-    rows = []
-    for item in data:
-        dims = item['dimensions']
-        metr = item['metrics']
-        
-        # Вытаскиваем наш userID
-        u_uuid = None
-        if dims[3]['name'] == 'userID':
-            u_uuid = dims[4]['name']
+    request_id = res.json()['log_request']['request_id']
+    print(f"✅ Запрос {request_id} принят. Яндекс начал сборку файлов...")
 
-        rows.append({
-            "visit_id": dims[0]['name'],
-            "start_time": dims[1]['name'],
-            "client_id": dims[2]['name'],
-            "user_uuid": u_uuid,
-            "city": dims[5]['name'],
-            "device": dims[6]['name'],
-            "os": dims[7]['name'],
-            "source": dims[8]['name'],
-            "referrer": dims[9]['name'],
-            "visit_duration": int(metr[0]),
-            "page_views": int(metr[1]),
-            "is_bounce": metr[2] > 0 # Если bounceRate > 0, считаем как отказ
+    # Б. ЖДЕМ ГОТОВНОСТИ (Цикл ожидания)
+    while True:
+        status_res = requests.get(f"{log_url}/{request_id}", headers=HEADERS)
+        status = status_res.json()['log_request']['status']
+        print(f"⌛ Статус сборки: {status}")
+        
+        if status == 'processed': break
+        if status in ['error', 'cleaned_by_user']:
+            print("❌ Ошибка при сборке логов на стороне Яндекса.")
+            return
+        time.sleep(15) # Ждем 15 секунд перед следующей проверкой
+
+    # В. СКАЧИВАЕМ И СОХРАНЯЕМ
+    parts = status_res.json()['log_request']['parts']
+    all_dfs = []
+
+    for part in parts:
+        part_num = part['part_number']
+        print(f"📥 Скачиваю часть {part_num}...")
+        down_url = f"{log_url}/{request_id}/part/{part_num}/download"
+        data_res = requests.get(down_url, headers=HEADERS)
+        
+        df_part = pd.read_csv(io.StringIO(data_res.text), sep="\t")
+        all_dfs.append(df_part)
+
+    if all_dfs:
+        df = pd.concat(all_dfs)
+        
+        # Г. ТРАНСФОРМАЦИЯ (Декодируем UUID и переименовываем)
+        df['user_uuid'] = df['ym:s:params64'].apply(decode_uuid)
+        
+        final_df = pd.DataFrame({
+            "visit_id": df['ym:s:visitID'].astype(str),
+            "start_time": pd.to_datetime(df['ym:s:dateTime']),
+            "client_id": df['ym:s:clientID'].astype(str),
+            "user_uuid": df['user_uuid'],
+            "city": df['ym:s:regionCity'],
+            "device": df['ym:s:deviceCategory'],
+            "os": df['ym:s:operatingSystemRoot'],
+            "source": df['ym:s:lastTrafficSource'],
+            "referrer": df['ym:s:referer'],
+            "visit_duration": df['ym:s:visitDuration'].astype(int),
+            "page_views": df['ym:s:pageViews'].astype(int),
+            "is_bounce": df['ym:s:isBounce'].astype(int) == 1
         })
 
-    df = pd.DataFrame(rows)
-    
-    if not df.empty:
-        # Записываем в metrica_logs
-        # Используем replace, чтобы всегда иметь свежие данные за 7 дней без дублей
-        df.to_sql('metrica_logs', engine, if_exists='replace', index=False)
-        print(f"✅ Успешно загружено {len(df)} визитов!")
+        # Записываем в базу
+        final_df.to_sql('metrica_logs', engine, if_exists='replace', index=False)
+        print(f"🎉 ФИНИШ! Загружено {len(final_df)} уникальных визитов.")
+
+        # Очищаем за собой в Яндексе
+        requests.post(f"{log_url}/{request_id}/clean", headers=HEADERS)
     else:
-        print("📭 Данных от Яндекса пока нет. Нужно подождать ~60 мин после заходов на сайт.")
+        print("📭 Данных не обнаружено.")
 
 if __name__ == "__main__":
-    fetch_metrica()
+    run_logs_api()
