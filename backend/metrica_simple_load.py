@@ -1,8 +1,6 @@
 import os
 import requests
 import pandas as pd
-import base64
-import json
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
@@ -47,37 +45,29 @@ except Exception as e:
 TOKEN = os.getenv("YANDEX_METRICA_TOKEN")
 COUNTER_ID = "107060992"
 
-def decode_uuid(val):
-    try:
-        if not val or val == "": return None
-        decoded = base64.b64decode(val).decode('utf-8')
-        return json.loads(decoded).get('userID')
-    except:
-        return None
-
 def fetch_metrica():
     if not TOKEN:
         print("❌ Ошибка: YANDEX_METRICA_TOKEN не найден в .env")
         return
 
-    # Вычисляем даты программно
     date_today = datetime.now().strftime('%Y-%m-%d')
     date_start = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
 
     url = "https://api-metrika.yandex.net/stat/v1/data"
     
-    # Ровно 10 измерений (лимит API)
+    # Мы заменили params64 на paramsLevel1 и paramsLevel2
+    # И убрали utm_source, чтобы не превысить лимит в 10 полей
     dimensions = [
-        "ym:s:visitID",            
-        "ym:s:dateTime",           
-        "ym:s:clientID",           
-        "ym:s:params64",           
-        "ym:s:regionCity",         
-        "ym:s:deviceCategory",     
-        "ym:s:operatingSystemRoot",
-        "ym:s:lastTrafficSource",  
-        "ym:s:referer",            
-        "ym:s:lastUTMSource"       
+        "ym:s:visitID",            # 0
+        "ym:s:dateTime",           # 1
+        "ym:s:clientID",           # 2
+        "ym:s:paramsLevel1",       # 3 (будет 'userID')
+        "ym:s:paramsLevel2",       # 4 (будет сам UUID)
+        "ym:s:regionCity",         # 5
+        "ym:s:deviceCategory",     # 6
+        "ym:s:operatingSystemRoot",# 7
+        "ym:s:lastTrafficSource",  # 8
+        "ym:s:referer"             # 9
     ]
     
     metrics = [
@@ -115,17 +105,22 @@ def fetch_metrica():
     for item in data:
         dims = item['dimensions']
         metr = item['metrics']
+        
+        # Проверяем, что это именно наш параметр userID
+        u_uuid = None
+        if dims[3]['name'] == 'userID':
+            u_uuid = dims[4]['name']
+
         rows.append({
             "visit_id": dims[0]['name'],
             "start_time": dims[1]['name'],
             "client_id": dims[2]['name'],
-            "user_uuid": decode_uuid(dims[3]['name']),
-            "city": dims[4]['name'],
-            "device": dims[5]['name'],
-            "os": dims[6]['name'],
-            "source": dims[7]['name'],
-            "referrer": dims[8]['name'],
-            "utm_source": dims[9]['name'],
+            "user_uuid": u_uuid,
+            "city": dims[5]['name'],
+            "device": dims[6]['name'],
+            "os": dims[7]['name'],
+            "source": dims[8]['name'],
+            "referrer": dims[9]['name'],
             "visit_duration": int(metr[0]),
             "page_views": int(metr[1]),
             "is_bounce": bool(metr[2])
@@ -134,10 +129,11 @@ def fetch_metrica():
     df = pd.DataFrame(rows)
     
     if not df.empty:
+        # Записываем в базу
         df.to_sql('metrica_logs', engine, if_exists='replace', index=False)
         print(f"✅ Успешно загружено {len(df)} визитов в таблицу metrica_logs")
     else:
-        print("📭 Данных от Яндекса пока нет. Проверь счетчик в интерфейсе Метрики.")
+        print("📭 Данных от Яндекса пока нет (либо никто не заходил, либо userID еще не обработан).")
 
 if __name__ == "__main__":
     fetch_metrica()
