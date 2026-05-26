@@ -5,16 +5,61 @@ import base64
 import json
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+from urllib.parse import quote_plus
+from pathlib import Path
+import sys
 
-load_dotenv()
+# 1. ОПРЕДЕЛЯЕМ ПУТИ
+# Находим папку, где лежит этот файл (backend)
+current_dir = Path(__file__).resolve().parent
+# Находим корень проекта (на уровень выше)
+base_dir = current_dir.parent
+# Путь к .env
+env_path = base_dir / '.env'
 
-# Настройки (убедись, что они есть в .env)
+# Загружаем переменные из .env
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+    print(f"✅ Файл .env найден по адресу: {env_path}")
+else:
+    print(f"❌ Файл .env НЕ НАЙДЕН по адресу: {env_path}")
+
+# 2. СОБИРАЕМ СТРОКУ ПОДКЛЮЧЕНИЯ (как в main.py)
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_NAME = os.getenv("DB_NAME", "gachapets_db")
+ENV_URL = os.getenv("DATABASE_URL")
+
+# Логика выбора URL
+if DB_USER and DB_PASS:
+    # Если есть логин и пароль, собираем Postgres URL (самый надежный вариант)
+    FINAL_URL = f"postgresql://{DB_USER}:{quote_plus(DB_PASS)}@{DB_HOST}/{DB_NAME}"
+    print(f"📡 Сборка URL из компонентов: {DB_USER}@localhost/{DB_NAME}")
+elif ENV_URL:
+    # Если в .env прописана готовая строка DATABASE_URL
+    FINAL_URL = ENV_URL
+    print(f"📡 Использование готового DATABASE_URL из .env")
+else:
+    # Если ничего не нашли — фоллбек на локальный sqlite, чтобы скрипт не упал
+    FINAL_URL = "sqlite:///./gachapets.db"
+    print("🏠 Переменные БД не найдены, использую SQLite по умолчанию.")
+
+# Создаем движок SQLAlchemy
+try:
+    engine = create_engine(FINAL_URL)
+    # Тестовое подключение
+    with engine.connect() as conn:
+        print("🔗 Связь с базой данных установлена успешно!")
+except Exception as e:
+    print(f"❌ Ошибка подключения к базе: {e}")
+    sys.exit(1)
+
+# 3. НАСТРОЙКИ ЯНДЕКСА
 TOKEN = os.getenv("YANDEX_METRICA_TOKEN")
 COUNTER_ID = "107060992"
-engine = create_engine(os.getenv("DATABASE_URL"))
 
 def decode_uuid(val):
-    """Простое декодирование нашего userID из params64"""
     try:
         if not val or val == "": return None
         decoded = base64.b64decode(val).decode('utf-8')
@@ -104,6 +149,6 @@ def fetch_metrica():
         print(f"✅ Успешно загружено {len(df)} визитов в таблицу metrica_logs")
     else:
         print("📭 Данных от Яндекса пока нет. Проверь счетчик и были ли заходы на сайт.")
-
+        
 if __name__ == "__main__":
     fetch_metrica()
