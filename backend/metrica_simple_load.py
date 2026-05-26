@@ -55,14 +55,13 @@ def fetch_metrica():
 
     url = "https://api-metrika.yandex.net/stat/v1/data"
     
-    # Мы заменили params64 на paramsLevel1 и paramsLevel2
-    # И убрали utm_source, чтобы не превысить лимит в 10 полей
+    # dimensions — ровно 10 (максимум)
     dimensions = [
         "ym:s:visitID",            # 0
         "ym:s:dateTime",           # 1
         "ym:s:clientID",           # 2
-        "ym:s:paramsLevel1",       # 3 (будет 'userID')
-        "ym:s:paramsLevel2",       # 4 (будет сам UUID)
+        "ym:s:paramsLevel1",       # 3
+        "ym:s:paramsLevel2",       # 4
         "ym:s:regionCity",         # 5
         "ym:s:deviceCategory",     # 6
         "ym:s:operatingSystemRoot",# 7
@@ -70,10 +69,11 @@ def fetch_metrica():
         "ym:s:referer"             # 9
     ]
     
+    # Метрики — исправленные названия для API Отчетов
     metrics = [
-        "ym:s:visitDuration",
-        "ym:s:pageViews",
-        "ym:s:isBounce"
+        "ym:s:avgVisitDurationSeconds", # Продолжительность
+        "ym:s:pageviews",               # Просмотры (все маленькие!)
+        "ym:s:bounceRate"               # Показатель отказов
     ]
 
     params = {
@@ -88,7 +88,7 @@ def fetch_metrica():
     
     headers = {"Authorization": f"OAuth {TOKEN}"}
     
-    print(f"📡 Запрашиваю данные у Яндекса за период {date_start} - {date_today}...")
+    print(f"📡 Запрашиваю данные у Яндекса...")
     
     try:
         res = requests.get(url, params=params, headers=headers)
@@ -106,7 +106,7 @@ def fetch_metrica():
         dims = item['dimensions']
         metr = item['metrics']
         
-        # Проверяем, что это именно наш параметр userID
+        # Вытаскиваем наш userID
         u_uuid = None
         if dims[3]['name'] == 'userID':
             u_uuid = dims[4]['name']
@@ -123,17 +123,18 @@ def fetch_metrica():
             "referrer": dims[9]['name'],
             "visit_duration": int(metr[0]),
             "page_views": int(metr[1]),
-            "is_bounce": bool(metr[2])
+            "is_bounce": metr[2] > 0 # Если bounceRate > 0, считаем как отказ
         })
 
     df = pd.DataFrame(rows)
     
     if not df.empty:
-        # Записываем в базу
+        # Записываем в metrica_logs
+        # Используем replace, чтобы всегда иметь свежие данные за 7 дней без дублей
         df.to_sql('metrica_logs', engine, if_exists='replace', index=False)
-        print(f"✅ Успешно загружено {len(df)} визитов в таблицу metrica_logs")
+        print(f"✅ Успешно загружено {len(df)} визитов!")
     else:
-        print("📭 Данных от Яндекса пока нет (либо никто не заходил, либо userID еще не обработан).")
+        print("📭 Данных от Яндекса пока нет. Нужно подождать ~60 мин после заходов на сайт.")
 
 if __name__ == "__main__":
     fetch_metrica()
