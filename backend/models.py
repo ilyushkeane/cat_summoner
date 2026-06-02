@@ -37,33 +37,19 @@ class UIEvent(Base):
     owner = relationship("User", back_populates="ui_events")
     
 class MetricaLog(Base):
-    __tablename__ = "metrica_logs"
+    __tablename__ = "yandex_metrica_data"
     
-    visit_id = Column(String, primary_key=True) # ym:s:visitID
-    user_uuid = Column(String, index=True)      # Наш userID из параметров
-    client_id = Column(String)                  # Внутренний ID Яндекса
-    
-    # Время
-    start_time = Column(DateTime)               # ym:s:dateTime
-    visit_duration = Column(Integer)            # Длительность в сек.
-    
-    # География
-    country = Column(String)
-    region = Column(String)
+    visit_id = Column(String, primary_key=True) 
+    user_uuid = Column(String, index=True)
+    client_id = Column(String)
+    date_time = Column(DateTime)
     city = Column(String)
-    
-    # Техника
-    device = Column(String)                     # Mobile / Desktop / Tablet
-    os = Column(String)                         # iOS / Android / Windows
-    browser = Column(String)
-    
-    # Маркетинг
-    source = Column(String)                     # Источник (ad / search / social)
-    utm_source = Column(String, nullable=True)
-    utm_medium = Column(String, nullable=True)
-    utm_campaign = Column(String, nullable=True)
+    device = Column(String)
+    os = Column(String)
+    source = Column(String)
     referrer = Column(String, nullable=True)
-    
-    # Поведение
-    page_views = Column(Integer)
-    is_bounce = Column(Boolean)                 # Отказ
+    # Метрики
+    visits = Column(Integer)
+    pageviews = Column(Integer)
+    bounce_rate = Column(Float)
+    duration = Column(Integer)           # Отказ
