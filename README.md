@@ -56,8 +56,6 @@ graph TD
         DB -->|Connector| DataLens[Yandex DataLens BI]
     end
 
-📊 Модель данных (Relational Star Schema)
-Реализована структура из трех связанных таблиц для глубокого анализа пользовательского пути.
 
 erDiagram
     USERS ||--o{ SUMMONS : "performs"
