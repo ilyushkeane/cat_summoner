@@ -57,6 +57,9 @@ graph TD
     end
 ```
 
+📊 Модель данных (Relational Star Schema)
+Реализована структура из трех связанных таблиц для глубокого анализа пользовательского пути.
+
 ```mermaid
 erDiagram
     USERS ||--o{ SUMMONS : "performs"
