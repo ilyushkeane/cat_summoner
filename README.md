@@ -55,7 +55,7 @@ graph TD
         Python -->|API Request| YM
         DB -->|Connector| DataLens[Yandex DataLens BI]
     end
-
+end
 
 erDiagram
     USERS ||--o{ SUMMONS : "performs"
