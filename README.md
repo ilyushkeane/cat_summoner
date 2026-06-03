@@ -89,7 +89,12 @@ erDiagram
     }
 ```
 
-## 📈 Бизнес-аналитика (DataLens)
+## 📈 Бизнес-аналитика (DataLens)  
+<p align="center">
+  <a href="https://gachapets.ru"><strong>🚀 Live Demo</strong></a> | 
+  <a href="https://datalens.yandex/m3m1tdjsuzx86"><strong>📊 Live BI Dashboard</strong></a>
+</p>  
+  
 1. Проект позволяет отслеживать в реальном времени;    
 2. Conversion Funnel: Из визита в первый призыв;    
 3. Pity Validation: Статистическое доказательство работы алгоритма гаранта (пик на 20-й крутке);    
