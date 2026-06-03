@@ -88,3 +88,13 @@ erDiagram
         datetime timestamp "Event Time"
     }
 ```
+
+## 📈 Бизнес-аналитика (DataLens)
+<p align="center">
+<img src="img/dashboard.png" alt="DataLens Dashboard" width="600">
+</p>
+1. Проект позволяет отслеживать в реальном времени:
+2. Conversion Funnel: Из визита в первый призыв.
+3. Pity Validation: Статистическое доказательство работы алгоритма гаранта (пик на 20-й крутке).
+4. Geo & Device Insights: Популярность и удачливость пользователей по городам и типам устройств.
+5. Retention: Возвращаемость пользователей на основе анализа UUID.
