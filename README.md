@@ -57,6 +57,7 @@ graph TD
     end
 ```
 
+```mermaid
 erDiagram
     USERS ||--o{ SUMMONS : "performs"
     USERS ||--o{ UI_EVENTS : "triggers"
@@ -83,3 +84,4 @@ erDiagram
         string event_name "Action (open_info, etc)"
         datetime timestamp "Event Time"
     }
+```
