@@ -1,11 +1,11 @@
-# 🐾 Gachapets: Fullstack Analytics & Gacha System
+# 🐾 Gachapets: Analytics & Gacha System
 
 <p align="center">
   <img src="img/preview.png" alt="Gachapets Preview" width="600">
 </p>
 
 <p align="center">
-  <a href="https://gachapets.ru"><strong>🚀 Live Demo</strong></a> | 
+  <a href="https://gachapets.ru/?ref=github"><strong>🚀 Live Demo</strong></a> | 
   <a href="https://datalens.yandex/m3m1tdjsuzx86"><strong>📊 Live BI Dashboard</strong></a>
 </p>
 
@@ -22,6 +22,10 @@
 ## 🌟 О проекте
 
 **Gachapets** — это интерактивная платформа, объединяющая игровую механику "Гача" с системой аналитики. Проект демонстрирует полный цикл разработки: от создания модульного фронтенда до настройки ETL-пайплайнов и построения BI-дашбордов.
+
+<p align="center">
+  <a href="https://gachapets.ru/?ref=github"><strong> Приложение Gachapets </strong></a>
+</p>  
 
 ### 🎯 Ключевые фичи
 - **Smart Pity System:** Алгоритм "защиты от неудач" — гарантированный легендарный дроп на 20-й призыв внутри сессии.
