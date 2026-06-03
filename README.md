@@ -99,3 +99,12 @@ erDiagram
 3. Pity Validation: Статистическое доказательство работы алгоритма гаранта (пик на 20-й крутке);    
 4. Geo & Device Insights: Популярность и удачливость пользователей по городам и типам устройств;    
 5. Retention: Возвращаемость пользователей на основе анализа UUID;    
+
+## 🛠 Технологический стек
+Слой	Стек
+Frontend	JavaScript (ES6 Modules), CSS3 (Glassmorphism), Canvas-Confetti
+Backend	Python 3.12, FastAPI, SQLAlchemy, Gunicorn, Pydantic
+Database	PostgreSQL (Production), SQLite (Dev)
+Infrastructure	Ubuntu Linux, Nginx, Systemd, SSL Let's Encrypt
+Monitoring	Netdata (Local & Cloud Dashboard)
+Data Eng	Pandas, Cron, Yandex Metrica API (Reporting
