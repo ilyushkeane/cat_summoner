@@ -1,10 +1,6 @@
 # 🐾 Gachapets: Analytics & Gacha System
 
 <p align="center">
-  <img src="img/preview.png" alt="Gachapets Preview" width="600">
-</p>
-
-<p align="center">
   <a href="https://gachapets.ru/?ref=github"><strong>🚀 Live Demo</strong></a> | 
   <a href="https://datalens.yandex/m3m1tdjsuzx86"><strong>📊 Live BI Dashboard</strong></a>
 </p>
