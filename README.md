@@ -91,7 +91,7 @@ erDiagram
 
 ## 📈 Бизнес-аналитика (DataLens)  
 <p align="center">
-  <a href="https://datalens.yandex/m3m1tdjsuzx86"><strong>📊 Live BI Dashboard</strong></a>
+  <a href="https://datalens.yandex/m3m1tdjsuzx86" target="_blank"><strong>📊 Live BI Dashboard</strong></a>
 </p>  
   
 1. Дашборд позволяет отслеживать изменения в реальном времени;    
