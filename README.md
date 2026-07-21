@@ -20,7 +20,7 @@
 **Gachapets** — это интерактивная платформа, объединяющая игровую механику "Гача" с системой аналитики. Проект демонстрирует полный цикл разработки: от создания модульного фронтенда до настройки ETL-пайплайнов и построения BI-дашбордов.
 
 <p align="center">
-  <a href="https://gachapets.ru/?ref=github"><strong> Приложение Gachapets </strong></a>
+  <a href="https://gachapets.ru/?ref=github" target="_blank"><strong> Приложение Gachapets </strong></a>
 </p>  
 
 ### 🎯 Ключевые фичи
