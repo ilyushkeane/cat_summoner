@@ -22,6 +22,10 @@ export async function fetchCatImage(tag) {
 }
 
 export async function sendStats(persona) {
+    // 1. Пытаемся найти параметр ?ref= в адресной строке
+    const urlParams = new URLSearchParams(window.location.search);
+    const customRef = urlParams.get('ref'); // Если в ссылке есть ?ref=tg, тут будет "tg"
+
     try {
         await fetch(`${API_URL}/log`, {
             method: 'POST',
@@ -31,7 +35,8 @@ export async function sendStats(persona) {
                 session_id: getSessionId(),
                 cat_title: persona.title,
                 rarity: persona.class,
-                referrer: document.referrer || "direct",
+                // 2. Если customRef есть — берем его, если нет — стандартный путь
+                referrer: customRef || document.referrer || "direct",
                 user_agent: navigator.userAgent,
                 is_mobile: /iPhone|Android/i.test(navigator.userAgent)
             })
