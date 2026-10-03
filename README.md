@@ -18,16 +18,21 @@
 ## 🌟 О проекте
 
 **Gachapets** — это интерактивная платформа, объединяющая игровую механику "Гача" с системой аналитики. Проект демонстрирует полный цикл разработки: от создания модульного фронтенда до настройки ETL-пайплайнов и построения BI-дашбордов.
-
 <p align="center">
-  Сайт приложения Gachapets:
   <a href="https://gachapets.ru/?ref=github" target="_blank" rel="noopener noreferrer"><strong> Приложение Gachapets </strong></a>
 </p>  
 
-<p align="center">
-  <a href="https://gachapets.ru/?ref=github"><strong>🚀 Live Demo</strong></a> | 
-  <a href="https://datalens.yandex/m3m1tdjsuzx86"><strong>📊 Live BI Dashboard</strong></a>
-</p>
+------
+
+## 🔗 Ссылки
+
+| Ресурс | Ссылка |
+| :--- | :--- |
+| **🌐 Сайт проекта** | [gachapets.ru](https://www.gachapets.ru/) |
+| **🧪 Тестирование & QA** | [QA Environment / Отчеты](https://github.com/ilyushkeane/cat_summoner/tree/main/qa) |
+| **📊 Аналитика** | [Yandex DataLens Дашборд](https://datalens.yandex/m3m1tdjsuzx86) |
+
+----
 
 ### 🎯 Ключевые фичи
 - **Smart Pity System:** Алгоритм "защиты от неудач" — гарантированный легендарный дроп на 20-й призыв внутри сессии.
