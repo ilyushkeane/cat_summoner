@@ -65,8 +65,8 @@
 |----|----------|-----------------|---------------------|------|--------|
 | TC-LOG-001 | Успешный призыв (common) | `cat_title: "Картонный Барон"`, `rarity: "common"` | 200, `{"status":"success","message":"Summon logged"}` |✅ |✅ 200 OK|
 | TC-LOG-002 | Призыв rare | `cat_title: "Теневой Ниндзя"`, `rarity: "rare"` | 200 |✅ |✅ 200 OK |
-| TC-LOG-003 | Призыв epic | `cat_title: "Профессор Мяу"`, `rarity: "epic"` | 200 |✅|200 OK|
-| TC-LOG-004 | Призыв legendary | `cat_title: "Кото-Завр"`, `rarity: "legendary"` | 200 |✅ |200 OK|
+| TC-LOG-003 | Призыв epic | `cat_title: "Профессор Мяу"`, `rarity: "epic"` | 200 |✅|✅ 200 OK|
+| TC-LOG-004 | Призыв legendary | `cat_title: "Кото-Завр"`, `rarity: "legendary"` | 200 |✅ |✅ 200 OK|
 | TC-LOG-005 | Минимальный набор (без опциональных полей) | Только `user_uuid`, `session_id`, `cat_title`, `rarity` | 200 |✅ |✅ 200 OK|
 | TC-LOG-006 | С `referrer` | `referrer: "vk.com"` | 200 |✅ |✅ 200 OK |
 | TC-LOG-007 | С `user_agent` | `user_agent: "Mozilla/5.0..."` | 200 |✅ |✅ 200 OK |
