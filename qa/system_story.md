@@ -8,11 +8,11 @@
 
 ```mermaid
 graph TD
-    %% Определение стилей для слоев
-    classDef client fill:#1f77b4,stroke:#fff,stroke-width:1px,color:#fff;
-    classDef js fill:#ff7f0e,stroke:#fff,stroke-width:1px,color:#fff;
-    classDef api fill:#2ca02c,stroke:#fff,stroke-width:1px,color:#fff;
-    classDef server fill:#d62728,stroke:#fff,stroke-width:1px,color:#fff;
+    %% Новая палитра: мягкие, менее яркие и профессиональные цвета
+    classDef client fill:#e1f5fe,stroke:#039be5,stroke-width:1px,color:#01579b;
+    classDef js fill:#eceff1,stroke:#b0bec5,stroke-width:1px,color:#37474f;
+    classDef api fill:#e8f5e9,stroke:#81c784,stroke-width:1px,color:#2e7d32;
+    classDef server fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#212121;
 
     %% Слой 1: Клиентский интерфейс
     subgraph Client [1. Клиентский интерфейс и Вход]
