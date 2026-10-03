@@ -23,6 +23,11 @@
   <a href="https://gachapets.ru/?ref=github" target="_blank" rel="noopener noreferrer"><strong> Приложение Gachapets </strong></a>
 </p>  
 
+<p align="center">
+  <a href="https://gachapets.ru/?ref=github"><strong>🚀 Live Demo</strong></a> | 
+  <a href="https://datalens.yandex/m3m1tdjsuzx86"><strong>📊 Live BI Dashboard</strong></a>
+</p>
+
 ### 🎯 Ключевые фичи
 - **Smart Pity System:** Алгоритм "защиты от неудач" — гарантированный легендарный дроп на 20-й призыв внутри сессии.
 - **End-to-End Analytics:** Сквозная связка данных из PostgreSQL и Yandex.Metrica API по уникальному `user_uuid`.
