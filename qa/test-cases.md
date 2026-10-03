@@ -32,7 +32,7 @@
 **`ALLOWED_EVENTS` (6 значений):** `app_init`, `summon_attempt`, `cat_summon_success`, `open_info`, `legendary_drop`, `technical_error`
 
 ### Базовые валидные данные (для подстановки в тесты)
-
+Обязательные поля (добавил их в Postman в окружение как константы).
 ```json
 {
   "user_uuid": "uuid-12345",
@@ -40,8 +40,15 @@
   "cat_title": "Картонный Барон",
   "rarity": "common"
 }
-```
 
+Необязательные поля:
+{
+"referrer":"tg",
+"user_agent":"mozilla firefox..",
+"is_mobile": true
+}
+
+```
 ---
 
 ## 1. POST /api/log — Логирование призыва кота
@@ -54,21 +61,21 @@
 
 | ID | Название | Тестовые данные | Ожидаемый результат | Факт | Статус |
 |----|----------|-----------------|---------------------|------|--------|
-| TC-LOG-001 | Успешный призыв (common) | `cat_title: "Картонный Барон"`, `rarity: "common"` | 200, `{"status":"success","message":"Summon logged"}` | | |
-| TC-LOG-002 | Призыв rare | `cat_title: "Теневой Ниндзя"`, `rarity: "rare"` | 200 | | |
-| TC-LOG-003 | Призыв epic | `cat_title: "Профессор Мяу"`, `rarity: "epic"` | 200 | | |
-| TC-LOG-004 | Призыв legendary | `cat_title: "Кото-Завр"`, `rarity: "legendary"` | 200 | | |
-| TC-LOG-005 | Минимальный набор (без опциональных полей) | Только `user_uuid`, `session_id`, `cat_title`, `rarity` | 200 | | |
-| TC-LOG-006 | С `referrer` | `referrer: "vk.com"` | 200 | | |
-| TC-LOG-007 | С `user_agent` | `user_agent: "Mozilla/5.0..."` | 200 | | |
-| TC-LOG-008 | С `is_mobile: true` | `is_mobile: true` | 200 | | |
-| TC-LOG-009 | Все опциональные поля заполнены | `referrer`, `user_agent`, `is_mobile` | 200 | | |
+| TC-LOG-001 | Успешный призыв (common) | `cat_title: "Картонный Барон"`, `rarity: "common"` | 200, `{"status":"success","message":"Summon logged"}` |✅ |✅ 200 OK|
+| TC-LOG-002 | Призыв rare | `cat_title: "Теневой Ниндзя"`, `rarity: "rare"` | 200 |✅ |✅ 200 OK |
+| TC-LOG-003 | Призыв epic | `cat_title: "Профессор Мяу"`, `rarity: "epic"` | 200 |✅|200 OK|
+| TC-LOG-004 | Призыв legendary | `cat_title: "Кото-Завр"`, `rarity: "legendary"` | 200 |✅ |200 OK|
+| TC-LOG-005 | Минимальный набор (без опциональных полей) | Только `user_uuid`, `session_id`, `cat_title`, `rarity` | 200 |✅ |✅ 200 OK|
+| TC-LOG-006 | С `referrer` | `referrer: "vk.com"` | 200 |✅ |✅ 200 OK |
+| TC-LOG-007 | С `user_agent` | `user_agent: "Mozilla/5.0..."` | 200 |✅ |✅ 200 OK |
+| TC-LOG-008 | С `is_mobile` | `true` | 200 |✅|✅ 200 OK |
+| TC-LOG-009 | Все опциональные поля заполнены | `referrer`, `user_agent`, `is_mobile` | 200 |✅|✅ 200 OK |
 
 ### 1.2 Негативные сценарии — валидация `cat_title`
 
 | ID | Название | Тестовые данные | Ожидаемый результат | Факт | Статус |
 |----|----------|-----------------|---------------------|------|--------|
-| TC-LOG-010 | Несуществующий кот | `cat_title: "Барсик"` | 422, `loc: ["body","cat_title"]` | | |
+| TC-LOG-010 | Несуществующий кот | `cat_title: "Барсик"` | 422, `loc: ["body","cat_title"]` |❌| ❌ 422|
 | TC-LOG-011 | Кот в нижнем регистре | `cat_title: "картонный барон"` | 422 | | |
 | TC-LOG-012 | Кот с лишним пробелом | `cat_title: "Картонный Барон "` | 422 | | |
 | TC-LOG-013 | Пустой `cat_title` | `cat_title: ""` | 422 | | |
