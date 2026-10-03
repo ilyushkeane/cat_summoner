@@ -35,7 +35,7 @@
 
 ```json
 {
-  "user_uuid": "test-user-12345",
+  "user_uuid": "uuid-12345",
   "session_id": "session-12345",
   "cat_title": "Картонный Барон",
   "rarity": "common"
