@@ -4,52 +4,61 @@
 
 ---
 
-## 📊 Диаграмма последовательности (Sequence Diagram)
+## 📊 Архитектурная схема (User Flow Diagram)
 
 ```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Пользователь
-    participant UI as Браузер (UI)
-    participant JS as JS Модули (gacha / personalities)
-    participant API as api.js
-    participant Server as FastAPI (main.py)
-    database DB as База Данных
+graph TD
+    %% Определение стилей для слоев
+    classDef client fill:#1f77b4,stroke:#fff,stroke-width:1px,color:#fff;
+    classDef js fill:#ff7f0e,stroke:#fff,stroke-width:1px,color:#fff;
+    classDef api fill:#2ca02c,stroke:#fff,stroke-width:1px,color:#fff;
+    classDef server fill:#d62728,stroke:#fff,stroke-width:1px,color:#fff;
 
-    Note over User, UI: 1. Инициализация
-    User->>UI: Вход в приложение
-    UI->>UI: Отрисовка default-параметров интерфейса
-    UI->>UI: Создание и запись UUID в LocalStorage
-    UI->>UI: Подключение Яндекс Метрики (UUID + session_id)
-
-    Note over User, UI: 2-3. Просмотр информации
-    User->>UI: Клик на кнопку «Информация»
-    UI->>User: Всплывает окно с информацией о котиках
-
-    Note over User, JS: 4. Механика призыва
-    User->>UI: Клик на кнопку «Призвать котика»
-    UI->>JS: gacha.js -> Обработка события -> getRoll()
-    JS->>JS: personalities.js -> Чтение справочника характеристик
-    JS-->>UI: Возврат случайно выбранного котика
-
-    Note over UI, Server: 5. Отправка статистики (Параллельно)
-    rect rgb(240, 245, 240)
-        par api.js -> sendStats()
-            UI->>API: Передача (котик, uuid, ref-метка)
-            API->>Server: POST /api/log
-        and api.js -> sendEvent()
-            UI->>API: Передача данных только о пользователе
-            API->>Server: POST /api/event
-        end
+    %% Слой 1: Клиентский интерфейс
+    subgraph Client [1. Клиентский интерфейс и Вход]
+        A[Вход в приложение] --> B[Отрисовка UI и default-параметров]
+        B --> C[Создание UUID в LocalStorage]
+        C --> D[Коннект UUID + session_id в Яндекс Метрике]
     end
+    class Client,A,B,C,D client;
 
-    Note over Server, DB: 6. Серверная валидация и сохранение
-    rect rgb(245, 240, 240)
-        Server->>Server: Проверка CORS и списков разрешенных значений
-        Server->>Server: Валидация Pydantic-схем (user_uuid, session_id, rarity...)
-        Server->>Server: Вызов метода log_summon() для маршрута api/log
-        Server->>DB: Запись лога вызова котика в БД
+    %% Слой 2: Выбор действий
+    D --> E{2. Действие пользователя}
+    class E client;
+
+    %% Ветка Информации
+    E -->|Клик 'Информация'| F[3. Всплывающее окно с инфо о котиках]
+    class F client;
+
+    %% Ветка Призыва
+    E -->|Клик 'Призвать котика'| G[4. Запуск механизма системы]
+
+    %% Слой 3: Логика JS модулей
+    subgraph JS_Modules [4. Внутренняя логика JS]
+        G --> H[4.1 gacha.js: обработка клика и вызов getRoll]
+        H --> I[4.2 personalities.js: Справочник характеристик котиков]
+        I --> J[4.3 getRoll случайным образом выбирает котика]
     end
+    class JS_Modules,G,H,I,J js;
+
+    %% Слой 4: Сетевые запросы
+    subgraph API_Layer [5. Сетевой слой / api.js]
+        J --> K[5. api.js: Метод sendStats]
+        K -->|Сбор: котик + uuid + ref| L[POST: /api/log]
+        
+        J --> M[5.1 api.js: Метод sendEvent]
+        M -->|Сбор: данные пользователя| N[POST: /api/event]
+    end
+    class API_Layer,K,L,M,N api;
+
+    %% Слой 5: Бэкенд на FastAPI
+    subgraph Backend [6. Бэкенд / Python FastAPI]
+        L --> O[6. main.py: Создание FastAPI и настройка CORS]
+        N --> O
+        O --> P[6.1 Валидация Pydantic-схем: user_uuid, session_id, rarity...]
+        P --> Q[6.2 log_summon: запись призыва в Базу Данных]
+    end
+    class Backend,O,P,Q server;
 ```
 
 ---
