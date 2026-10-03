@@ -40,8 +40,10 @@
   "cat_title": "Картонный Барон",
   "rarity": "common"
 }
+```
 
 Необязательные поля:
+```
 {
 "referrer":"tg",
 "user_agent":"mozilla firefox..",
